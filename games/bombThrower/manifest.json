@@ -1,0 +1,42 @@
+{
+    "splash":   "arcadeArt/background.jpg",
+    "titleArt": "arcadeArt/gameTitle.png",
+	"width":    1024,
+	"height":   622,
+	"fps": 60,
+
+    "id":       "bombThrower",
+    "name":     "bombThrower",
+    "gameClass": "bombThrower.js",
+
+    "dependencies": [
+		"scripts/ndgmr.Collision.js",
+	    "scripts/movieclip-0.6.1.min.js",
+	    "scripts/HUD.js",
+	    "scripts/LevelManager.js",
+        "scripts/Pig.js",
+		"scripts/Bird.js",
+		"scripts/Assets.js",
+	    "scripts/bombThrower.js" 
+    ],
+
+	"deployDependencies": [
+		"scripts/centipede-min.js"
+	],
+
+    "assets":   [
+		{"id": "TextureSheet", "src": "images/textureSheet.json"} ,
+		"images/all.png",
+		{"id": "all", "src": "images/all.png" },
+		{"id": "skin1", "src": "images/skin1.png"},
+		{"id": "ground1", "src": "images/ground1.png"},
+		{"id": "grass", "src": "images/parallax1.png"},
+		{"id": "grass2", "src": "images/parallax2.png"},
+		{"id": "grass3", "src": "images/parallax3.png"},
+		{"id": "AngryBird", "src": "sounds/AngryBird.mp3"}
+	    
+	  
+    ],
+
+	"multiplayer": false
+}

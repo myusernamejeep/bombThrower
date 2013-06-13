@@ -1,0 +1,62 @@
+{
+    "splash":   "arcadeArt/background.jpg",
+    "titleArt": "arcadeArt/gameTitle.png",
+	"width":    1024,
+	"height":   622,
+    "fps":      60,
+
+    "id":       "yarsrevenge",
+    "name":     "Yars Revenge",
+    "gameClass": "YarsRevenge2.js",
+
+	"dependencies": [
+		"scripts/Yars.js",
+        "scripts/Qotile.js",
+        "scripts/Ball.js",
+        "scripts/Fetus.js",
+        "scripts/Blast.js",
+        "scripts/Missile.js",
+        "scripts/Splash.js",
+        "scripts/LevelManager.js",
+        "scripts/Popup.js",
+        "scripts/Baddy.js",
+        "scripts/Legs.js",
+        "scripts/Energy.js",
+        "scripts/Cannon.js",
+        "scripts/Assets.js",
+        "scripts/EnergyField.js",
+        "scripts/Swirl.js",
+		"scripts/YarsRevenge2.js",
+        "scripts/ScoreBoard.js"
+	],
+
+	"deployDependencies": [
+		"scripts/yars-revenge-min.js"
+	],
+
+	"assets":   [
+        {"id":"fire", "src":"sounds/Fire_01.mp3", "data":3},
+        {"id":"skull_baddy", "src":"sounds/Skull_Baddy_01.mp3"},
+        {"id":"player_killed", "src":"sounds/Player_Killed.mp3"},
+        {"id":"qotile_destroyed", "src":"sounds/Qotile_Destroyed.mp3"},
+        {"id":"missileFire", "src":"sounds/Zorlon_Cannon_Fire_01.mp3", "data":2},
+        {"id":"qotile_attack", "src":"sounds/Qotile_Swirl_Attack.mp3"},
+        {"id":"music", "src":"sounds/BG_Music_Loop.mp3"},
+        {"id":"jungleMusic", "src":"sounds/Amazon_Jungle_Ambience_2.mp3"},
+        {"id":"splashSound", "src":"sounds/EnterDivide.mp3", "data":2},
+        {"id":"inWaterfallSound", "src":"sounds/PlayerInDivide.mp3"},
+        {"id":"eggZap", "src":"sounds/EggZap.mp3"},
+        {"id":"eggSpawn", "src":"sounds/EggSpawn.mp3", "data":2},
+        {"id":"qotileHit", "src":"sounds/QotileHit.mp3"},
+        {"id":"cannonReady", "src":"sounds/CannonReady.mp3"},
+        {"id":"swirlHit", "src":"sounds/SwirlHit.mp3"},
+        {"id":"loseCoda", "src":"sounds/Lose_Coda.mp3"},
+        {"id":"collectEnergy", "src":"sounds/Energy_Collecting.mp3"},
+        {"id":"squidKilled", "src":"sounds/Squid_Killed_revised.mp3"},
+        {"id":"chargeCannon", "src":"sounds/Shield Charge-01.mp3"},
+
+        {"id":"yarsAssetsAll", "src":"images/YarsAssets_All.json"},
+        "images/YarsAssets_All.png",
+        {"id":"background", "src":"images/background.jpg"}
+	]
+}

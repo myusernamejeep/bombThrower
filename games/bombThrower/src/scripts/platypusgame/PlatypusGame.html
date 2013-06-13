@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CreateJS export from PlatypusGame.fla</title>
+
+<script src="libs/easeljs-0.4.1.min.js"></script>
+<script src="libs/tweenjs-0.2.0.min.js"></script>
+<script src="libs/movieclip-0.4.1.min.js"></script>
+<script src="libs/preloadjs-0.1.0.min.js"></script>
+<script src="libs/soundjs-0.2.0.min.js"></script>
+<script src="PlatypusGame.js"></script>
+
+<script>
+var canvas, stage, exportRoot, images;
+
+function init() {
+	canvas = document.getElementById("canvas");
+	images = {};
+
+	var manifest = [
+		{src:"images/cliff.png", id:"cliff"},
+		{src:"sounds/pop.mp3", id:"pop"}
+	];
+
+	var loader = new PreloadJS(false);
+	loader.installPlugin(SoundJS);
+	loader.onFileLoad = handleFileLoad;
+	loader.onComplete = handleComplete;
+	loader.loadManifest(manifest);
+}
+
+function handleFileLoad(o) {
+	if (o.type == "image") { images[o.id] = o.result; }
+}
+
+function handleComplete() {
+	exportRoot = new lib.PlatypusGame();
+
+	stage = new Stage(canvas);
+	stage.addChild(exportRoot);
+	stage.update();
+
+	Ticker.setFPS(20);
+	Ticker.addListener(stage);
+}
+
+function playSound(name, loop) {
+	SoundJS.play(name, SoundJS.INTERRUPT_EARLY, 0, 0, loop);
+}
+</script>
+</head>
+
+<body onload="init();" style="background-color:#D4D4D4">
+	<canvas id="canvas" width="800" height="400" style="background-color:#ffffff"></canvas>
+</body>
+</html>
