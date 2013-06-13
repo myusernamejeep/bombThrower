@@ -164,6 +164,8 @@
 		}
 		createjs.Tween.get(self.sprite).to({scale:1.1}, 100).call(callback1); 
 		
+		
+		
 	};
 	p.anim_rotate1 = function(cb){	
 		this.sprite.gotoAndStop("bird3");

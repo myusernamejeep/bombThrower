@@ -68,6 +68,9 @@
 			this.width = gameInfo.width;
 			this.spritesheet = new GameLibs.SpriteSheetWrapper(this.assets.TextureSheet);
  
+			this.spritesheet1 = new GameLibs.SpriteSheetWrapper(this.assets.TextureSheet1);
+			this.spritesheetPongAssets = new GameLibs.SpriteSheetWrapper(this.assets.PongAssets);
+ 
 			var g = new Graphics();
 			g.beginBitmapFill(assets.ground1 , "repeat-x")
 			g.drawRect(0, 0, gameInfo.width, assets.ground1.height).endFill();
@@ -146,6 +149,9 @@
 			
 			this.birdContainer = new createjs.Container();
 			this.stage.addChildAt(this.birdContainer, 6);
+			
+			this.pointContainer = new createjs.Container();
+			this.stage.addChildAt(this.pointContainer, 8);
 			
 			this.pigContainer = new createjs.Container();
 			this.pigContainer.mouseEnabled = false;
@@ -340,7 +346,22 @@
 						//createjs.Tween.get(birds[0].sprite).to({x:self.originX, y:self.originY},  500);
 					}
 					pig.die(cb);
+					
+					var self = this;
+					var callback1 = function(){
+ 						//self.pointContainer.removeChild(p300.sprite);
+					}
+					var p300 = new  CurrentGame.Point(this.spritesheet1,'Floaty_s300', pig, callback1);
+					this.pointContainer.addChild(p300.sprite);
+			 
 					bird.self.die();
+					
+					var callback2 = function(){
+ 						self.pointContainer.removeChild(p600.sprite);
+					}
+					var p600 = new CurrentGame.Point(this.spritesheet1,'Floaty_s600', bird, callback2);
+					this.pointContainer.addChild(p600.sprite);
+					
 					this.birdContainer.removeChild(bird);
 					return;
 				}

@@ -124,7 +124,8 @@
 		this.dead = true;
 		//this._avatar.gotoAndPlay("die");
 		this.anim_die(cb);
-	};
+		
+ 	};
 	
     p.tick = function(tickFactor){
         //Move

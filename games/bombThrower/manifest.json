@@ -16,6 +16,7 @@
 	    "scripts/LevelManager.js",
         "scripts/Pig.js",
 		"scripts/Bird.js",
+		"scripts/Point.js",
 		"scripts/Assets.js",
 	    "scripts/bombThrower.js" 
     ],
@@ -33,10 +34,13 @@
 		{"id": "grass", "src": "images/parallax1.png"},
 		{"id": "grass2", "src": "images/parallax2.png"},
 		{"id": "grass3", "src": "images/parallax3.png"},
-		{"id": "AngryBird", "src": "sounds/AngryBird.mp3"}
-	    
-	  
-    ],
+		{"id": "AngryBird", "src": "sounds/AngryBird.mp3"},
+	    {"id": "PongAssets", "src": "images/PongAssets.json"} ,
+		"images/PongAssets.png",
+		{"id": "TextureSheet1", "src": "images/TextureSheet1.json"} ,
+		"images/TextureSheet_1.png",
+		"images/TextureSheet_0.png" 
+     ],
 
 	"multiplayer": false
 }

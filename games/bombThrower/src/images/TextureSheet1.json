@@ -1,5 +1,5 @@
 {
-    "images": ["TextureSheet_0.png", "TextureSheet_1.png"],
+    "images": ["images/TextureSheet_0.png", "images/TextureSheet_1.png"],
     "frames": [
         [266, 637, 102, 60, 0, 0, 0],
         [164, 637, 102, 60, 0, 0, 0],
@@ -350,7 +350,10 @@
         "MushroomDmg2": {"frames": [131]},
         "Scorpion": {"frames": [245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264]},
         "MushroomPoisonDmg1": {"frames": [240]},
-        "Floaty300": {"frames": [265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277]},
+        "Floaty300": {"frames": [265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, -1]},
+        "Floaty_s300": {"frames": [273]},
+        "Floaty_s600": {"frames": [285]},
+		"Floaty_s900": {"frames": [298]},
         "CentipedeWalk": {"frames": [145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157]},
         "MushroomSpottedDmg1": {"frames": [109]},
         "GnomeAttack": {"frames": [53, 54, 55, 56, 57, 58, 59]},
