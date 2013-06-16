@@ -511,5 +511,27 @@
 			
 		],
 		"copyright":"Bomb Thrower &reg; &copy; 2013 Jumphol Tangtrairattanakul."
+	},
+	"fishCatcher": {
+		"id": "fishCatcher",
+		"name": "Fish Catcher",
+		"base": "games/fishCatcher/",
+		"bgImage": "arcadeArt/background.jpg",
+		"instructions": [
+			{
+				"touch": {
+						"image": "arcadeArt/control-paddleMove-touch.jpg",
+						"icon": "icon-control-drag-hor",
+						"description": "Use the joystick to control the paddle."
+				},
+				"desktop": {
+						"image": "arcadeArt/control-paddleMove-desktop.jpg",
+						"icon": "icon-control-ws-key",
+						"description": "Use arrows to W/S to control the paddle."
+				}
+			}
+			
+		],
+		"copyright":"Fish Catcher &reg; &copy; 2013 Jumphol Tangtrairattanakul."
 	}
 }

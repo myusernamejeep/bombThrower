@@ -265,6 +265,8 @@
 			// Only allow names that are letters, numbers, underscore, or period; 32 characters long; and end in ".js".
 			var match = s.manifest.gameClass.match(/([\w\.]{0,32})(?=\.js)/);
 			var className = match[1];
+			Atari.trace(className);
+			Atari.trace(match);
 			eval("gameInstance = new Atari.currentGame."+ className +"()");
 		} catch (error) {
 			Atari.trace("Unable to instantiate class. Please ensure it exists on Atari.currentGame namespace, contains only alpha-numeric characters, and is no longer than 32 characters.");

@@ -1,0 +1,13 @@
+{
+    "images": ["images/cannon4.png"],
+    "frames": [
+        [0,0,74,83],
+		[0,83,74,83],
+		[0,166,74,83], 
+		[0,249,74,83],
+		[0,332,74,83] 
+    ],
+    "animations": {
+        "default": {"frames": [0,4 ]} 
+     },"regX":37, "regY":52, "useFrames":true, "interval":3, "power":4
+}   

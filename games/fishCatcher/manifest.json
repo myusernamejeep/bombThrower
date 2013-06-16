@@ -1,0 +1,105 @@
+{
+    "splash":   "arcadeArt/background.jpg",
+    "titleArt": "arcadeArt/gameTitle.png",
+	"width":    1024,
+	"height":   622,
+	"fps": 60,
+
+    "id":       "fishCatcher",
+    "name":     "fishCatcher",
+    "gameClass": "fishCatcher.js",
+
+    "dependencies": [
+  	    "scripts/libs/jquery-1.8.3.min.js",
+		"scripts/libs/quark.base-1.0.0.alpha.min.js", 
+		"scripts/libs/ndgmr.Collision.js",
+	    "scripts/libs/movieclip-0.6.1.min.js",
+	    "scripts/Assets.js",
+	    "scripts/HUD.js",
+	    "scripts/LevelManager.js",
+		
+		"scripts/R.js",
+		"scripts/Utils.js",
+		"scripts/fishjoy.js",
+		"scripts/FishManager.js",
+		"scripts/FishGroup.js",
+		"scripts/views/Fish.js",
+		"scripts/views/Button.js",
+		"scripts/views/Cannon.js",
+		"scripts/views/Bullet.js",
+		"scripts/views/Num.js",
+		"scripts/views/Player.js",
+ 	    "scripts/fishCatcher.js" 
+    ],
+
+	"deployDependencies": [
+		 "scripts/centipede-min.js"
+	],
+
+    "assets":   [
+ 		{"id": "mainbg", "src": "images/game_bg_2_hd.jpg"} ,
+		
+		{"id": "bottom", "src": "images/bottom.json"} ,
+		"images/bottom.png",
+		
+		{"id": "number_black", "src": "images/number_black.json"} ,
+		"images/number_black.png",	
+		
+		{"id": "coinText", "src": "images/coinText.json"} ,
+		"images/coinText.png",	
+		{"id": "coinAni1", "src": "images/coinAni1.json"} ,
+		"images/coinAni1.png",	
+		 {"id": "coinAni2", "src": "images/coinAni2.json"} ,
+		"images/coinAni2.png",	
+		
+		{"id": "fish1", "src": "images/fish1.json"} ,
+		"images/fish1.png",	
+		 {"id": "fish2", "src": "images/fish2.json"} ,
+		"images/fish2.png",	
+		{"id": "fish3", "src": "images/fish3.json"} ,
+		"images/fish3.png",	
+		{"id": "fish4", "src": "images/fish4.json"} ,
+		"images/fish4.png",	
+		{"id": "fish5", "src": "images/fish5.json"} ,
+		"images/fish5.png" ,
+		{"id": "fish6", "src": "images/fish6.json"} ,
+		"images/fish6.png" ,
+		{"id": "fish7", "src": "images/fish7.json"} ,
+		"images/fish7.png" ,
+		{"id": "fish8", "src": "images/fish8.json"} ,
+		"images/fish8.png" ,
+		{"id": "fish9", "src": "images/fish9.json"} ,
+		"images/fish9.png" ,
+		{"id": "fish10", "src": "images/fish10.json"} ,
+		"images/fish10.png" ,
+		
+		{"id": "shark1", "src": "images/shark1.json"} ,
+		"images/shark1.png" ,
+		{"id": "shark2", "src": "images/shark2.json"} ,
+		"images/shark2.png" ,
+		
+		{"id": "web", "src": "images/web.json"} ,
+		"images/web.png" ,
+		
+ 		"images/bullet.png" ,
+		
+		{"id": "cannon1", "src": "images/cannon1.json"} ,
+		"images/cannon1.png" ,
+		{"id": "cannon2", "src": "images/cannon2.json"} ,
+		"images/cannon2.png" ,
+		{"id": "cannon3", "src": "images/cannon3.json"} ,
+		"images/cannon3.png" ,
+		{"id": "cannon4", "src": "images/cannon4.json"} ,
+		"images/cannon4.png" ,
+		{"id": "cannon5", "src": "images/cannon5.json"} ,
+		"images/cannon5.png" ,
+		{"id": "cannon6", "src": "images/cannon6.json"} ,
+		"images/cannon6.png" ,
+		{"id": "cannon7", "src": "images/cannon7.json"} ,
+		"images/cannon7.png" 
+		
+		
+     ],
+
+	"multiplayer": false
+}

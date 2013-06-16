@@ -1,0 +1,17 @@
+{
+    "images": ["images/bottom.png"],
+    "frames": [
+        [0,0,765,72],
+		[132,72,44,31],
+		[88,72,44,31], 
+		[44,72,44,31],
+		[0,72,44,31] 
+    ],
+    "animations": {
+        "bottombar": {"frames": [0 ]} ,
+		"cannonMinusup": {"frames": [1 ]},
+		"cannonMinusdown": {"frames": [2 ]},
+		"cannonPlusup": {"frames": [3 ]},
+		"cannonPlusdown": {"frames": [4 ]}  
+     }
+}   

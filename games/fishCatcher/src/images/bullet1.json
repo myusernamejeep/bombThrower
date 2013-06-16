@@ -1,0 +1,6 @@
+{
+    "images": ["images/bullet.png"],
+    "frames": [ [86,0,24,26] ], regX:12, regY:13,
+    "animations": {  "default": {"frames": [0]}  }
+}  
+ 
