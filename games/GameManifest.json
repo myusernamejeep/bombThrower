@@ -533,5 +533,27 @@
 			
 		],
 		"copyright":"Fish Catcher &reg; &copy; 2013 Jumphol Tangtrairattanakul."
+	},
+	"BaseDefender": {
+		"id": "BaseDefender",
+		"name": "Base Defender",
+		"base": "games/BaseDefender/",
+		"bgImage": "arcadeArt/background.jpg",
+		"instructions": [
+			{
+				"touch": {
+						"image": "arcadeArt/control-paddleMove-touch.jpg",
+						"icon": "icon-control-drag-hor",
+						"description": "Use the joystick to control the paddle."
+				},
+				"desktop": {
+						"image": "arcadeArt/control-paddleMove-desktop.jpg",
+						"icon": "icon-control-ws-key",
+						"description": "Use arrows to W/S to control the paddle."
+				}
+			}
+			
+		],
+		"copyright":"Base Defender &reg; &copy; 2013 Jumphol Tangtrairattanakul."
 	}
 }

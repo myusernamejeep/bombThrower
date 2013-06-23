@@ -5,24 +5,35 @@
 
 	var Bullet = ns.Bullet = function(props)
 	{
-		this.power = 0;
+		this.power = 1;
 		this.speedX = 0;
 		this.speedY = 0;
 		
-		Bullet.superClass.constructor.call(this, props);
-		this.id = Q.UIDUtil.createUID("Bullet");
+		//Bullet.superClass.constructor.call(this, props);
+		this.id = UID.get();
+		this.sheet = ns.R.bullet_sprites[ this.power ];
+		var spritesheet = new GameLibs.SpriteSheetWrapper(this.sheet);
+		var sprite  =  new  createjs.BitmapAnimation( spritesheet );
+		sprite.gotoAndStop( "default" );	
+		sprite.regX = this.sheet.regX, sprite.regY = this.sheet.regY;
+		
+		this.sprite = sprite;
+		
 	};
-	Q.inherit(Bullet, Q.Bitmap);
+	//Q.inherit(Bullet, Q.Bitmap);
 
 	Bullet.prototype.update = function(timeInfo)
 	{	
+		
 		if(this.isOutOfScreen())
 		{
 			this.destory();
 		}else
 		{
-			this.x += this.speedX;
-			this.y -= this.speedY;	
+			this.sprite.x += this.speedX;
+			this.sprite.y -= this.speedY;	
+			
+			//console.debug('Bullet.sprite', this.sprite,  this.speedX, this.speedY);
 			if(this.checkCollision()) this.destory();
 		}
 	};
@@ -39,14 +50,15 @@
 		for(var i = 0; i < len; i++)
 		{
 			var fish = fishes[i];
-			if(this.y - this.height*0.5 > fish.y + fish.height*0.5 || 
-			   this.y + this.height*0.5 < fish.y - fish.height*0.5 || 
-			   this.x - this.width*0.5 > fish.x + fish.width*0.5 || 
-			   this.x + this.width*0.5 < fish.x - fish.width*0.5)
+			if(this.sprite.y - this.height*0.5 > fish.sprite.y + fish.height*0.5 || 
+			   this.sprite.y + this.height*0.5 < fish.sprite.y - fish.height*0.5 || 
+			   this.sprite.x - this.width*0.5 > fish.sprite.x + fish.width*0.5 || 
+			   this.sprite.x + this.width*0.5 < fish.sprite.x - fish.width*0.5)
 			{
 				continue;
 			}	
-			if(this.hitTestObject(fish, true))
+			var intersection = ndgmr.checkRectCollision(this.sprite,fish.sprite);
+			if(intersection)
 			{
 				hitted = true;
 				break;
@@ -54,39 +66,56 @@
 		}
 		if(hitted === false) return false;
 		
+		this.destory();
 		//release a web
-		var web = new Q.Bitmap(ns.R.webs[this.power - 1]);
-		web.x = this.x;
-		web.y = this.y;
+		var sp = ns.R.web_sprites[ this.power ];
+		//console.debug('sp',sp);
+		var spritesheet = new GameLibs.SpriteSheetWrapper(sp);
+		var web  =  new  createjs.BitmapAnimation( spritesheet );
+		web.gotoAndStop( "default" );	
+		web.regX = sp.regX, web.regY = sp.regY;
+		
+		this.web = web;
+		
+ 		web.x = this.sprite.x;
+		web.y = this.sprite.y;
 		web.scaleX = web.scaleY = 0.8;
 		web.eventEnabled = false;
 		this.parent.addChild(web);
 		
 		//make the web animate
+		/*
 		Q.Tween.to(web, {scaleX:1.0, scaleY:1.0}, {time:100, reverse:true, 
-		onComplete:function(tween)
-		{			
-			if(tween.reversing&& web.parent) web.parent.removeChild(web);
-			tween.reversing = true;
-		}});
-		
+			onComplete:function(tween)
+			{			
+				if(tween.reversing&& web.parent) web.parent.removeChild(web);
+				tween.reversing = true;
+			}}
+		);*/
+		 createjs.Tween.get(web)
+ 				    .to({scaleX:1.0, scaleY:1.0},100,createjs.Ease.backOut)
+ 				    .call(function(tween){			
+						web.parent.removeChild(web);
+						//tween.reversing = true;
+					});
 		//check if any fish be captured
 		for(var i = 0; i < len; i++)
 		{
 			var fish = fishes[i];
-			if(web.y - web.height*0.5 > fish.y + fish.height*0.5 || 
-			   web.y + web.height*0.5 < fish.y - fish.height*0.5 || 
-			   web.x - web.width*0.5 > fish.x + fish.width*0.5 || 
-			   web.x + web.width*0.5 < fish.x - fish.width*0.5)
+			if(web.y - web.height*0.5 > fish.sprite.y + fish.height*0.5 || 
+			   web.y + web.height*0.5 < fish.sprite.y - fish.height*0.5 || 
+			   web.x - web.width*0.5 > fish.sprite.x + fish.width*0.5 || 
+			   web.x + web.width*0.5 < fish.sprite.x - fish.width*0.5)
 			{
 				continue;
 			}
-			if(web.hitTestObject(fish, true) && fish.canBeCaptured(this.power - 1))
+			var intersection = ndgmr.checkRectCollision(web,fish.sprite);
+			if(intersection && fish.canBeCaptured(this.power ))
 			{		
 				fish.moving = false;
 				fish.captured = true;
 				fish.capturingCounter = game.fps >> 1;
-				fish.gotoAndPlay("capture");
+				fish.sprite.gotoAndPlay("capture");
 			}
 		}
 		return true;
@@ -94,15 +123,24 @@
 
 	Bullet.prototype.destory = function()
 	{
+		for(var i = 0; i < game.bullets.length; i++)
+		{
+			var bullet = game.bullets[i];
+			if(bullet.is_destroyed){
+				game.bullets.splice(i, 1);		
+			}
+		}
 		this.parent.removeChild(this);
+		this.sprite.is_destroyed = true
+		 
 	};
 
 	Bullet.prototype.isOutOfScreen = function()
 	{
-		return (this.x < -50 ||
-				this.x > game.width + 50 || 
-				this.y < -50 || 
-				this.y > game.height + 50);
+		return (this.sprite.x < -50 ||
+				this.sprite.x > game.width + 50 || 
+				this.sprite.y < -50 || 
+				this.sprite.y > game.height + 50);
 	};
 
 	scope.Bullet = Bullet;

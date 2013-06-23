@@ -71,6 +71,7 @@
 			this.spritesheet1 = new GameLibs.SpriteSheetWrapper(this.assets.TextureSheet1);
 			this.spritesheetPongAssets = new GameLibs.SpriteSheetWrapper(this.assets.PongAssets);
  
+			console.debug(assets.ground1);
 			var g = new Graphics();
 			g.beginBitmapFill(assets.ground1 , "repeat-x")
 			g.drawRect(0, 0, gameInfo.width, assets.ground1.height).endFill();

@@ -37,7 +37,11 @@
 	],
 
     "assets":   [
- 		{"id": "mainbg", "src": "images/game_bg_2_hd.jpg"} ,
+		
+ 		{"id": "YarsAssets_All", "src": "images/YarsAssets_All.json"} ,
+		"images/YarsAssets_All.png",
+		
+		{"id": "mainbg", "src": "images/game_bg_2_hd.jpg"} ,
 		
 		{"id": "bottom", "src": "images/bottom.json"} ,
 		"images/bottom.png",
@@ -96,8 +100,10 @@
 		{"id": "cannon6", "src": "images/cannon6.json"} ,
 		"images/cannon6.png" ,
 		{"id": "cannon7", "src": "images/cannon7.json"} ,
-		"images/cannon7.png" 
+		"images/cannon7.png" ,
 		
+		{"id": "web", "src": "images/web.json"} ,
+		"images/web.png" 
 		
      ],
 

@@ -32,11 +32,11 @@
 	{
 		var me = this, power = 1;
 		
-		this.cannon = new ns.Cannon(ns.R.cannonTypes[power]);
+		this.cannon = new ns.Cannon(ns.R.bullet_sprites[power-1]);
 		this.cannon.id = "cannon";
 		this.cannon.sprite.x = game.bottom.x + 425;
-		this.cannon.sprite.y = game.bottom.y + 60;
-		this.cannon.sprite.y = game.height - 10;
+		this.cannon.sprite.y = game.bottom.y + 50;
+		//this.cannon.sprite.y = game.height - 10;
   		game.stage.enableMouseOver(50);
        
 		this.cannonMinus = new ns.Button(this.sheet.bottom,"cannonMinusup","cannonMinusdown");
@@ -62,7 +62,8 @@
 		this.coinNum.x = game.bottom.x + 20;
 		this.coinNum.y = game.bottom.y + 44;
 		this.updateCoin(this.coin);
-		 
+		//console.debug(this.cannon.sprite);
+		
 		game.stage.addChild(this.cannon.sprite, this.cannonMinus.button, this.cannonPlus.button , this.coinNum );
 	};
 
@@ -72,23 +73,27 @@
 		if(this.coin < power) return;
 		
 		//cannon fire
-		var dir = ns.Utils.calcDirection(cannon, targetPoint), degree = dir.degree;
+		var dir = ns.Utils.calcDirection(cannon.sprite, targetPoint), degree = dir.degree;
 		if(degree == -90) degree = 0;
 		else if(degree < 0 && degree > -90) degree = -degree;
 		else if(degree >= 180 && degree <= 270) degree = 180 - degree;
 		cannon.fire(degree);
 		
+		//console.debug(targetPoint, power, degree);
+		
 		//fire a bullet
 		var sin = Math.sin(degree*Q.DEG_TO_RAD), cos = Math.cos(degree*Q.DEG_TO_RAD);
-		var bullet = new ns.Bullet(ns.R.bullets[power - 1]);
-		bullet.x = cannon.x + (cannon.regY + 20) * sin;
-		bullet.y = cannon.y - (cannon.regY + 20) * cos;
-		bullet.rotation = degree;
+		var bullet = new ns.Bullet(ns.R.bullet_sprites[power - 1]);
+		bullet.sprite.x = cannon.sprite.x + (cannon.sprite.regY + 20) * sin;
+		bullet.sprite.y = cannon.sprite.y - (cannon.sprite.regY + 20) * cos;
+		bullet.sprite.rotation = degree;
 		bullet.power = power;
 		bullet.speedX = speed * sin;
 		bullet.speedY = speed * cos;
-		game.stage.addChild(bullet);
-		
+		game.stage.addChild(bullet.sprite);
+		game.bullets.push(bullet);
+		//console.debug(bullet.sprite, bullet );
+		bullet.parent = game.stage;
 		//deduct coin
 		this.updateCoin(-power, true);
 	}
@@ -106,7 +111,7 @@
 		if(this.coin > 999999) this.coin = 999999;
 		this.coinNum.setValue(this.coin);
 		
-		console.debug(this.coin);
+		//console.debug(this.coin);
 		
 	};
 	scope.Player = Player;

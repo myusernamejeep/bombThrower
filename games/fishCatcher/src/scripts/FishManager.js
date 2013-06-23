@@ -6,7 +6,7 @@
 	var FishManager = ns.FishManager = function(container)
 	{	
 		this.fishPool = [];
-		this.poolSize = 1000;
+		this.poolSize = 500;
 		this.minNumFishScreen = this.poolSize >> 1;
 		this.maxNumFishScreen = this.poolSize;
 			
@@ -31,7 +31,9 @@
 	{	
 		for(var i = 0; i < this.fishes.length; i++)
 		{
-			var fish = this.fishes[i];
+			var fish = this.fishes[i];			
+			fish.update();
+			
 			if(fish.captured)
 			{
 				this.fishes.splice(i, 1);			
@@ -48,6 +50,7 @@
 			}else if(!fish.hasShown)
 			{
 				fish.hasShown = true;
+
 			}
 		}
 		
@@ -68,14 +71,15 @@
 		var chance = Math.random() * len >> 0;
 		var index = Math.random() * chance + 1 >> 0;
 		var type = ns.R.fishTypes[index];
+		//console.debug('type', type, index);
 		var num = Math.random() * type.mixin.maxNumGroup + 1 >> 0;	
 		if(num > this.fishPool.length) num = this.fishPool.length;
 		if(num <= 0) return;
-		console.debug('type.frames', type, type.frames);
+		//console.debug('type.frames', type, type.frames);
 		//initialize fish properties
 		var group = this.fishPool.splice(0, num), cy = game.height >> 1;
 		var typeWidth = type.frames[0][2], typeHeight = type.frames[0][3];
-		console.debug('typeWidth', typeWidth);
+		//console.debug('typeWidth', typeWidth);
 		var sx = Math.random() > 0.5 ? -typeWidth : game.width + typeWidth;
 		var sy = Math.random()* 200 + (game.height >> 1) - 100 >> 0;
 		var speed = Math.random()*(type.mixin.maxSpeed - type.mixin.minSpeed) + type.mixin.minSpeed;
@@ -94,7 +98,8 @@
 			fish.speed = speed;
 			fish.changeDirection(degree);
 			this.fishes.push(fish);
-			this.container.addChild(fish);
+			//console.debug('fish', fish);
+			this.container.addChild(fish.sprite);
 		}
 		ns.FishGroup.setRandomPatten(group, sx, sy);
 	};

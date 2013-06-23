@@ -147,7 +147,8 @@
 		assets.fish8.mixin = {coin:40, captureRate:0.20, maxNumGroup:3, minSpeed:0.5, maxSpeed:0.8, regX:90, regY:50, useFrames:true, interval:10};
 		assets.fish9.mixin = {coin:50, captureRate:0.15, maxNumGroup:2, minSpeed:0.5, maxSpeed:0.8, regX:120, regY:70, useFrames:true, interval:10};
 		assets.fish10.mixin = {coin:60, captureRate:0.10, maxNumGroup:2, minSpeed:0.5, maxSpeed:0.8, regX:100, regY:80, useFrames:true, interval:10};
-		
+		assets.shark1.mixin = {coin:100, captureRate:0.05, maxNumGroup:1, minSpeed:0.5, maxSpeed:0.6, regX:350, regY:130, useFrames:true, interval:10};
+		assets.shark2.mixin = {coin:200, captureRate:0.02, maxNumGroup:1, minSpeed:0.5, maxSpeed:0.6, regX:350, regY:130, useFrames:true, interval:10};
 		this.fishTypes = [null, assets.fish1, assets.fish2, assets.fish3, assets.fish4, assets.fish5, assets.fish6, assets.fish8, assets.fish9, assets.fish10, assets.fish7, assets.shark1, assets.shark2];
 		this.cannonTypes = [null, assets.cannon1, assets.cannon2, assets.cannon3, assets.cannon4, assets.cannon5, assets.cannon6, assets.cannon7];
 		

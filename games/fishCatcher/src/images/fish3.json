@@ -12,7 +12,7 @@
 		[0,392,72,56]
     ],
     "animations": {
-        "swim": {"frames": [0,3,"swim",4]} ,
- 		"capture": {"frames": [4,7,"capture",4]} 
+        "swim": [0,3,"swim",60]  ,
+ 		"capture": [4,7,"capture",60] 
     }
 }  

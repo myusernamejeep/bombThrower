@@ -4,14 +4,17 @@
 	var game = ns.game;
 
 	var Cannon = ns.Cannon = function( sheet )
-	{	console.debug( sheet);
+	{	
+		//console.debug( sheet);
 		this.power = 0;
 		this.sheet = sheet;
 		//Cannon.superClass.constructor.call(this, props);
 		var spritesheet = new GameLibs.SpriteSheetWrapper(this.sheet);
 		var sprite  =  new  createjs.BitmapAnimation( spritesheet );
 		sprite.gotoAndPlay("default");	
+		sprite.regX = this.sheet.regX, sprite.regY = this.sheet.regY;
 		this.sprite = sprite;
+		//console.debug('Cannon sprite', sprite);
 		/*
 		var btn = new createjs.MovieClip(null, null, false, {up:0,over:10,down:20, out:0}).set({x:100, y:30});
 		stage.addChild(btn);
@@ -32,7 +35,7 @@
 */
 		//this.stop();
 	};
-	Q.inherit(Cannon, BitmapAnimation );
+	//Q.inherit(Cannon, BitmapAnimation );
 
 	Cannon.prototype.setPower = function(power, increase)
 	{	
@@ -42,13 +45,14 @@
 		
 		this.power = power;
 		this.setType(ns.R.cannonTypes[power]);
+		//console.debug('Cannon setType', power);
 	};
 
 	Cannon.prototype.setType = function(type)
 	{
 		Q.merge(this, type, true);
 		Q.merge(this, type.mixin, false);
-		
+		//console.debug('type.mixin ', type.mixin, type);
 		//this.setDrawable(type.image);
 		//this._frames.length = 0;
 		//this.addFrame(type.frames);
@@ -56,14 +60,17 @@
 		var sprite  =  new  createjs.BitmapAnimation( spritesheet );
 		sprite.gotoAndPlay("default");	
 		this.sprite = sprite;
+		
+		//console.debug('setType this.sprite  ', this.sprite );
 		//this.gotoAndStop(0);
 	};
 
 	Cannon.prototype.fire = function(degree)
 	{
-		this.rotation = degree;
+		this.sprite.rotation = degree;
 		//this.gotoAndPlay(0);
-		this.sprite.gotoAndPlay("default");	
+		this.sprite.gotoAndPlay("shoot");	
+		//console.debug('Cannon fire  ', degree );
 	};
 
 	scope.Cannon = Cannon;

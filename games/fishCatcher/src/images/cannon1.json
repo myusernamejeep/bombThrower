@@ -8,7 +8,8 @@
 		[0,296,74,74] 
     ],
     "animations": {
-        "default": {"frames": [0,4 ]} 
+        "shoot":[0,4 ,"shoot", 30],
+		"default":[0]
     },
 	"regX":37, "regY":45, "useFrames":true, "interval":3, "power":1
 }

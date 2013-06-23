@@ -18,9 +18,10 @@
 			var dx = Math.random()*fish.width + 20 >> 0;
 			var dy = Math.random()*fish.height + 20 >> 0;
 			if(Math.random() > 0.5) dy *= -1;
-			fish.x = prev.x + dx * dir;
-			fish.y = prev.y + dy;
+			fish.sprite.x = fish.x = Math.abs(prev.x + dx * dir);
+			fish.sprite.y = fish.y = Math.abs(prev.y + dy);
 			prev = fish;
+			//console.debug('Fish sprite', fish.sprite.x, fish.sprite.y);
 		}
 	};
 

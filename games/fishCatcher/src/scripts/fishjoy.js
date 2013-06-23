@@ -13,7 +13,7 @@
 		fireInterval: 30,
 		fireCount: 0
 	};
-
+	/*
 	game.load = function(assets, stage, gameInfo){
  
 		this.fireInterval = this.fps*0.5;
@@ -78,7 +78,7 @@
 		e.target.removeAllEventListeners();
 		this.init(e.images);
 	};
-
+	*/
 	game.init = function(images)
 	{
 		ns.R.init(images);
@@ -92,6 +92,7 @@
 		this.height = gameInfo.height ;
 		this.stage = stage ;
 		this.assets = assets ;
+		this.gameInfo = gameInfo ;
 		console.debug(this.assets);
 		
 		ns.R.init(this.assets);
@@ -107,7 +108,7 @@
 		
 		this.fishManager = new ns.FishManager(this.fishContainer);
 		this.fishManager.makeFish();
-		
+		//console.debug(this.fishContainer);
 		// Add a HUD background
 		var hud = new createjs.Shape(new createjs.Graphics().beginFill("rgba(0,0,0,0.4)").drawRect(0,0,this.width,55));
 		this.stage.addChild(hud);
@@ -117,47 +118,82 @@
 		createjs.Ticker.addEventListener("tick", Atari.proxy(this.tick, this));
  
 		this.bgAudio = new Audio("/audios/bg.mp3", true, true, true);
+		
+		this.startGame();
 	};
-
-	game.initUI = function()
-	{
- 		//console.debug(ns.R.mainbg, this.assets.mainbg);
-		var g = new Graphics();
-		g.beginBitmapFill(this.assets.mainbg , "no-repeat")
-		g.drawRect(0, 0, this.width, this.height).endFill();
-		this.bg = new createjs.Shape(g);
-		//console.debug(this.bg);
- 
-		this.fishContainer = new createjs.Container();
-		this.stage.addChildAt(this.fishContainer, 1);
-		this.fishContainer.click = Atari.proxy(this.clickEvent, this);
-		//this.fishContainer = new Q.DisplayObjectContainer({id:"fishContainer", width:this.width, height:this.height, eventChildren:false, transformEnabled:false});
-		/*
-		this.fishContainer.onEvent = function(e)
-		{
-			if(e.type == game.events[0] && game.fireCount >= game.fireInterval)
-			{
-				game.fireCount = 0;
-				game.player.fire({ x: e.eventX, y: e.eventY });
-				//load background audio for ios devices.
-				if(game.bgAudio && !game.bgAudio.playing() && !game.bgAudio.loading)
-				{
-					game.bgAudio.loading = true;
-					game.bgAudio.load();
-				} else if (game.bgAudio && !game.bgAudio.playing())
-				{
-					game.bgAudio._element.play();
+	
+	game.handleShoot =  function () {
+ 		var self = this;
+		if( game.fireCount >= game.fireInterval ) { 
+			game.fireCount = 0;
+			//console.log("handleShoot : " , self.stageX, self.stageY ); // always in bounds
+			game.player.fire({ x: self.stageX, y: self.stageY });
+			game.bgAudio.play();
+		}
+	};
+	
+	game.handleKeyBoardButton =  function (key) {
+		if(key == GameLibs.GamePad.BUTTON_1 ){
+			if (!this.isInsideField) {
+				if (this.shootAllowed) {
+					this.shootAllowed = false;
+					//Tween.get(this, {override:false}).wait(250).call(this.fireDelay, null, this);
 				}
 			}
-		};*/
- 			 
+		}
+		if (key == GameLibs.GamePad.BUTTON_3 || key == GameLibs.GamePad.BUTTON_2){
+			this.handleShoot();
+		}
+		if (key == GameLibs.GamePad.BUTTON_2){
+			//this.yars.arm.rotation +=  5;
+		}
+		if (key == GameLibs.GamePad.BUTTON_4){
+			//this.yars.arm.rotation -=  5;
+		}
+
+	};	
+	game.initUI = function() {
+ 
+		var spritesheet = new GameLibs.SpriteSheetWrapper(ns.R.mainbg);
+		var sprite  =  new  createjs.BitmapAnimation( spritesheet );
+		sprite.gotoAndPlay("default");	
+		this.bg = sprite;
+		
+		this.fishContainer = new createjs.Container();
+		this.stage.addChildAt(this.fishContainer, 1);
+		
+		this.bullets = [];
+ 
+		var self = this;
+		 
+		this.stage.onMouseDown = function(evt) {
+			console.debug("the canvas was clicked at "+evt.stageX+","+evt.stageY);
+			self.clickEvent(evt);
+		}
+		 
+		this.stage.onMouseMove = function(evt) {
+			self.stageX = evt.stageX;
+			self.stageY = evt.stageY;
+		}
+		/*this.bg.onPress = function(evt) {
+			// add handlers directly to the event object:
+			evt.onMouseMove = function(evt) {
+				evt.target.x = evt.stageX;
+				evt.target.y = evt.stageY;
+			}
+			console.log("onPress stageX/Y: "+evt.stageX+","+evt.stageY); // always in bounds
+			
+			evt.onMouseUp = function(evt) { console.log("up"); }
+		}*/
+		 
 		var _spriteSheet = new GameLibs.SpriteSheetWrapper(this.assets.bottom);
 		this.bottom =  new  createjs.BitmapAnimation( _spriteSheet );
  		this.bottom.id = "bottom";
 		this.bottom.x = this.width - this.bottom.spriteSheet._frames[0].rect.width >> 1;
 		this.bottom.y = this.height - this.bottom.spriteSheet._frames[0].rect.height + 2;
  		this.bottom.gotoAndPlay("bottombar");	
- 		
+ 		//console.debug("this.bottom " ,this.bottom);
+			
 		this.stage.addChild(this.bg, this.fishContainer, this.bottom);	
 	};
 
@@ -172,30 +208,185 @@
 		if( game.fireCount >= game.fireInterval )
 		{
 			game.fireCount = 0;
-			game.player.fire({ x: e.eventX, y: e.eventY });
+			game.player.fire({ x: e.stageX, y: e.stageY });
 			//load background audio for ios devices.
-			if(game.bgAudio && !game.bgAudio.playing() && !game.bgAudio.loading)
+			game.bgAudio.play();
+			/*if(game.bgAudio && !game.bgAudio.playing() && !game.bgAudio.loading)
 			{
 				game.bgAudio.loading = true;
 				game.bgAudio.load();
 			} else if (game.bgAudio && !game.bgAudio.playing())
 			{
 				game.bgAudio._element.play();
-			}
+			}*/
 		}
 	};
+	// Start level resets everything.
+	game.startLevel = function() { 
+		this.timeRemaining = game.GAME_TIME;
+		this.startTime = new Date().getTime();
+		this.hits = 0;
+		this.ballText.text = "Hits: " + this.hits;
+	};
+
+	game.startGame = function() {
+		
+		// When touch-enabled, add the touch throttle.
+		/*
+		if (this.gameInfo.touchEnabled) {
+			this.throttle = new GameLibs.Throttle(new createjs.Rectangle(0,0,this.gameInfo.width,this.gameInfo.height),
+					GameLibs.Throttle.HORIZONTAL,
+					{autoHide:false});
+			this.throttle.setPosition(this.gameInfo.width>>1, this.gameInfo.height-60);
+			this.stage.addChild(this.throttle.sprite);
+
+		}
+		
+		if (this.gameInfo.touchEnabled) {
+
+			// Create a joystick. There are lots of awesome
+			// configurations, but this is all you need to get
+			// started. Check out the docs for options!
+			var joystick = new GameLibs.Joystick(stage);
+			joystick.setPosition(25, 25);
+			stage.addChild(joystick);
+		}*/
+		/*
+		this.gameInfo.touchEnabled = true;
+		if (this.gameInfo.touchEnabled) {
+			this.spritesheet = new GameLibs.SpriteSheetWrapper(this.assets.YarsAssets_All );
+			 
+			this.moveJoyStick = new GameLibs.Joystick(null, {
+				controlDirection: true,
+				autoHide: false,
+				radius: 20,
+				pullRadius: 50
+			}, this.spritesheet);
+			this.moveJoyStick.setPosition(100, 550);
+			this.buttonOverlay = new Shape();
+			this.shootBtn = new GameLibs.ArcadeButton(GameLibs.GamePad.BUTTON_3, null, this.spritesheet, "shoot", {hoverAlpha:1, disabledAlpha:0.5, alpha:1});
+			this.shootBtn.setDisabled(true);
+			this.shootBtn.setPosition(925, 550);
+			this.stage.addChild(this.moveJoyStick.sprite, this.shootBtn.sprite);
+
+		} 
+		GameLibs.GamePad.player.onButtonDown = Atari.proxy(this.handleKeyBoardButton, this);	
+		*/
+		// Create the on-screen text
+		this.scoreText = new createjs.Text("Score: 0", "20px Arial", "#ffffff");
+		this.scoreText.x = 20
+		this.scoreText.y = 15;
+		this.scoreManager = new GameLibs.ScoreManager(this.scoreText);
+		this.scoreManager.prefix = "Score: ";
+		
+		this.timeText = new createjs.Text("1:00:00", "40px Arial", "#ffffff");
+		this.timeText.textAlign = "center";
+		this.timeText.y = 5;
+		this.timeText.x = this.gameInfo.width >> 1;
+
+		this.ballText = new createjs.Text("Hits: 0", "20px Arial", "#ffffff");
+		this.ballText.y = 15;
+		this.ballText.textAlign = "right";
+		this.ballText.x = this.gameInfo.width - 20;
+
+		this.stage.addChild(this.scoreText, this.timeText, this.ballText);
+
+		// Create the intro text
+		this.titleText = new createjs.Text("Catch many fish as you can!", "40px Arial", "#ffffff");
+		this.titleText.x = -1500;
+		this.titleText.y = 150;
+		this.titleText.alpha = 0;
+		this.titleText.textAlign = "center";
+		this.stage.addChild(this.titleText);
+
+		// Tween in the intro text, then tween out.
+		createjs.Tween.get(this.titleText)
+				.wait(1000)
+				.to({x:this.gameInfo.width>>1, alpha:1},400,createjs.Ease.backOut)
+				.wait(1000)
+				.to({x:1500, alpha:0}, 400, Ease.backIn)
+				.call(this.startLevel, null, this);
+				
+		this.shootTimer = setInterval( Atari.proxy(this.handleShoot, this) , 3000); 
+	};
+	 
+	game.updateTime = function() {
+		if(!this.timeText)
+			return ;
+		if (this.timeRemaining < 0) {
+			this.timeText.text = "00:00:00";
+			return;
+		}
+		var seconds = "" + (this.timeRemaining / 1000 >> 0);
+		while (seconds.length < 2) { seconds = "0" + seconds; }
+		var ms = ""+((this.timeRemaining - seconds * 1000) / 10 | 0);
+		while (ms.length < 2) { ms = "0" + ms; }
+		this.timeText.text = "00:" + seconds + ":" + ms;
+	};
+	 
+	game.gameOver = function() {
+		// We could do something fancy here...
+		this.onGameOver();
+	};
 	
-	game.tick = function(event)
+	game.tick = function(tickFactor)
 	{
 		this.frames++;
 		this.fireCount++;
-		if(this.fishManager)
+		if(this.fishManager){
 			this.fishManager.update();
-		
-		//this.fireEvent(event);
-		this.showFPS();
+		}
+		for(var i = 0, len = this.bullets.length; i < len; i++){
+			var _bullet = this.bullets[i];
+			if(_bullet)
+				_bullet.update();
+			else{
+				this.bullets.splice(i, 1);		
+			}
+		}
+		this.numTicks += tickFactor;
+		this.timeRemaining = game.GAME_TIME - (new Date().getTime() - this.startTime);
+
+		// refresh the timer
+		this.updateTime();
+  		if (this.timeRemaining > 0 && this.numTicks > this.lastItem + this.itemDelay) {
+			this.lastItem = this.numTicks;
+ 		}
+ 		this.showFPS();
 		this.stage.update();
 	};
+	
+	game.pause= function(paused) {
+
+	};
+
+	game.getScore = function() {
+		return new GameLibs.GameDetails(this.scoreManager.score);
+	};
+
+	game.restart = function() {
+		this.scoreManager.setScore(0);
+		this.startLevel();
+	};
+
+	game.continueGame = function(keepPoints) {
+		if (!this.keepPoints) {
+			this.scoreManager.setScore(0);
+		}
+		this.startLevel();
+	};
+	
+	game.destroy = function(){
+
+	};
+	
+	/*********************************************************************
+	 * Framework Callbacks
+	 **********************************************************************/
+	game.onLevelComplete = null;
+	game.onGameComplete = null;
+	game.onGameOver = null;
+	game.onGameError = null;
 
 	game.testFish = function()
 	{

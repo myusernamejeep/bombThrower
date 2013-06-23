@@ -13,6 +13,6 @@
 		[0,540,60,60]
     ],
     "animations": {
-		"default": {"frames": [0,9,"default",4]}
+		"default": [0,9,"default",30] 
     }
 }
