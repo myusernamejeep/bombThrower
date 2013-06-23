@@ -1,0 +1,54 @@
+{
+    "splash":   "arcadeArt/background.jpg",
+    "titleArt": "arcadeArt/gameTitle.png",
+	"width":    1200,
+	"height":   580,
+	"fps": 60,
+
+    "id":       "BaseDefender",
+    "name":     "BaseDefender",
+    "gameClass": "MainGame.js",
+
+    "dependencies": [
+  	    "scripts/libs/jquery-1.8.3.min.js",
+		"scripts/libs/ndgmr.Collision.js",
+	    "scripts/libs/movieclip-0.6.1.min.js",
+	    "scripts/Assets.js",
+		"scripts/Astar.js",
+		"scripts/Player.js",
+		"scripts/ImageManager.js",
+		"scripts/Gatling.js",
+		"scripts/WeaponFactory.js",
+		"scripts/EnemyFactory.js",
+		"scripts/Soldier.js",
+		"scripts/WeaponTool.js",
+		"scripts/ScoreBar.js",
+		"scripts/MainGame.js"
+   	  
+    ],
+
+	"deployDependencies": ["scripts/centipede-min.js"
+ 	],
+
+    "assets":   [
+		
+ 		{"id": "grasslands", "src": "images/grasslands.png"}, 
+		{"id": "gatling_01", "src": "images/gatling_01.png"}, 
+		{"id": "tower_gatling0", "src": "images/tower_gatling_00000.png"}, 
+		{"id": "tower_gatling1", "src": "images/tower_gatling_00001.png"}, 
+		{"id": "light_soldier", "src": "images/unit_light_soldier_00000.png"}, 
+		{"id": "splashscreen", "src": "images/splashscreen.png"}, 
+		{"id": "storelogo", "src": "images/storelogo.png"}, 
+		{"id": "smalllogo", "src": "images/smalllogo.png"}, 
+		{"id": "logo", "src": "images/logo.png"}, 
+ 		{"id": "gatling_02", "src": "images/gatling_02.png"}, 
+		{"id": "soldier_01", "src": "images/soldier_01.png"},
+		{"id": "font", "src": "images/font.png"},
+		{"id": "other", "src": "images/other.png"},
+		{"id": "sounds_grasslands", "src": "sounds/grasslands.mp3"},
+		{"id": "digits", "src": "images/digits.json"}
+		
+      ],
+
+	"multiplayer": false
+}
