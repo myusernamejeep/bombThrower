@@ -18,7 +18,7 @@
 		this.tx = -1;
 		this.ty = 3;
 		this.direction = [1, 0];
-		
+		this.width = 38;
 		this._avatar = null;
 		this._healthBar = null;	
 		this._healthBarBg = null;	
@@ -166,8 +166,8 @@
 		var percent = this.health / this.maxHealth;
 		//make it bigger than 1 to avoid render error
 		var healthWidth = Math.round(40*percent) || 1;
-		if(this._healthBar) this._healthBar.width = healthWidth;
-	}
+		if(this._healthBar) this._healthBar.scaleX = percent;
+ 	}
 
 	Soldier.prototype.animateDeath = function()
 	{
@@ -175,32 +175,36 @@
 		this.removeChild(this._healthBarBg);
 		this._healthBar = null;
 		this._healthBarBg = null;
-		
-		var deathFrame = 33;
+		this._avatar.anim_death = true;
+		//var deathFrame = 33;
 		var frame_name = '';
 		if(this.direction[0] == 1)
 		{
 			//deathRightForwards
-			deathFrame += 1;	
+			//deathFrame += 1;	
 			frame_name = 'deathRightForwards';
 		}else if(this.direction[0] == -1)
 		{
 			//deathRightBackwards
-			deathFrame += ImageManager.soldier.deathRightForwards.length + 1;
+			//deathFrame += ImageManager.soldier.deathRightForwards.length + 1;
 			frame_name = 'deathRightBackwards';
 		}else if(this.direction[1] == 1)
 		{
 			//deathDownBackwards
-			deathFrame += ImageManager.soldier.deathRightForwards.length + ImageManager.soldier.deathRightBackwards.length + 1;
+			//deathFrame += ImageManager.soldier.deathRightForwards.length + ImageManager.soldier.deathRightBackwards.length + 1;
 			frame_name = 'deathDownBackwards';
 		}else if(this.direction[1] == -1)
 		{
 			//deathTopForwards		
-			deathFrame = this._avatar._frames.length - ImageManager.soldier.deathTopForwards.length + 1;
+			//deathFrame = this._avatar._frames.length - ImageManager.soldier.deathTopForwards.length + 1;
 			frame_name = 'deathTopForwards';
 		}
-		
+		//console.debug("._avatar.gotoAndPlay", frame_name, this._avatar );
 		this._avatar.gotoAndPlay(frame_name);
+		var self = this;
+		this._avatar.onAnimationEnd = function(){
+			self.parent.removeChild(self);
+		};
 	}
 
 	Soldier.prototype.isDead = function()
@@ -215,7 +219,7 @@
 
 	Soldier.prototype.tick = function(context)
 	{
-		if(this.isDead()) // && this._avatar.currentFrame < 34)
+		if(this.isDead() && !this._avatar.anim_death )
 		{
 			//animate death if health=0
 			this.animateDeath();

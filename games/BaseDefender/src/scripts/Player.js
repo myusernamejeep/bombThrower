@@ -170,8 +170,8 @@
 					this.score += target.score;
 					target.money = 0;
 				}
-			}else if(target.x >= this.gameInfo.width + target.width)
-			{
+			}else if(target.x >= this.gameInfo.width + target.width) {	
+				console.log('life--'  );
 				//escaped... lose life, remove target
 				this.life--;
 				this.scene.removeChild(target);
@@ -179,6 +179,8 @@
 				i--;
 			}else
 			{
+				//console.log('target '  , target.x, this.gameInfo.width + target.width);
+				
 				//alive... move target
 				this.moveTarget(target);
 			}

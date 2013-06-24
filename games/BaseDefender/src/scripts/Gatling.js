@@ -6,8 +6,8 @@
 	 
 	Gatling = function()
 	{
- 		this.name = UID.get(); 	
-		
+ 		this.id = UID.get(); 	
+		this.name = "gatling";	
 		this.status = "idle";	
 		this.level = 0;
 		this.cost = 0;
@@ -26,9 +26,15 @@
 		this._fireTime = 0;
 		this._currentAngleFrame = -1;
 		this._currentAngle = 0;
-		this._create();
+		//this._create();
+		this.initialize( );
 	}
- 
+	Gatling.prototype = new createjs.Container(); // inherit from Container
+	Gatling.prototype.Container_initialize = Gatling.prototype.initialize;
+	Gatling.prototype.Container_tick = Gatling.prototype._tick; 
+	Gatling.prototype._tick = function () {
+		this.Container_tick();
+    }
 	Gatling.prototype.IDLE = "idle";
 	Gatling.prototype.FIRE = "fire";
 
@@ -82,8 +88,11 @@
  
 		return sprite;
 	} 
-	Gatling.prototype._create = function()
-	{
+	Gatling.prototype.initialize = function( ){
+		this.Container_initialize();
+		
+	//Gatling.prototype._create = function()
+	//{
 		//set level
 		this.setLevel(this, 0);
 		this.spritesheet_idle  = new GameLibs.SpriteSheetWrapper(scope.ImageManager._gatling);
@@ -91,6 +100,9 @@
 		this.sprite_idle = this.createBitmap("idle", this.spritesheet_idle);
 		this.sprite_attack1 = this.createBitmap("attack1", this.spritesheet_gatling_attack1);
 		this.sprite_attack1.visible = false;
+		
+		this.addChild(this.sprite_idle);
+		this.addChild(this.sprite_attack1);
 		//note: here we only have bitmaps for right side, we use scaleX=-1 for flipping to left side
 		/*
 		//idle level1
@@ -165,8 +177,10 @@
 		this._currentAngleFrame = frame;	
 		this._currentAngle = angle;
 		this.status = status;
-		
-		frame = this.getRealFrame(frame, angle);
+		//console.log('angle', angle);
+		//frame = this.getRealFrame(frame, angle);
+		frame = "right-atk";
+		this.sprite_attack1.rotation =  angle - 180 - 45;
 		//aim it, hit it
 		this.sprite_idle.visible = false;
 		this.sprite_attack1.visible = true;

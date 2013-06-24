@@ -214,7 +214,11 @@ ImageManager = [];
 				[114, 363, 107, 111,0 , 54, 46] 
 			] ,
 			"animations": {  
-				"attack1": [0,12,"attack1", 60] 
+				"attack1": [0,12,"attack1", 60],
+				"right-atk": {
+					frames: [0,8,10],
+					next: "default" 
+ 				} 	
 			}
 		} 
 		
@@ -329,10 +333,10 @@ ImageManager = [];
 				"walkRight": [0,10,"walkRight"] ,
 				"walkTop": [11,21,"walkTop"] ,
 				"walkDown": [22,32,"walkDown"] ,
-				"deathRightForwards": [33,48,"deathRightForwards"] ,
-				"deathRightBackwards": [49,64,"deathRightBackwards"] ,
-				"deathTopForwards": [65,80,"deathTopForwards"] ,
-				"deathDownBackwards": [81,96,"deathDownBackwards"]  
+				"deathRightForwards": [33,48] ,
+				"deathRightBackwards": [49,64] ,
+				"deathTopForwards": [65,80] ,
+				"deathDownBackwards": [81,96]  
 			}
 		} 
 /*

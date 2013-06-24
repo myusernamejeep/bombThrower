@@ -43,7 +43,7 @@
 			
 		//life icon
 		this._lifeIcon = this.createBitmap('life', this.spritesheet);
- 		this._lifeIcon.x = this.gameInfo.width - 200;
+ 		this._lifeIcon.x = this.gameInfo.width - 150;
 		this._lifeIcon.y = 0;
 		this.addChild(this._lifeIcon);
  
@@ -195,6 +195,8 @@
 			{
 				var n = Number(str[i]);
 				//var frame = this._digits.clone();
+				//var frame = this._digits.clone();
+				//frame.gotoAndStop(str[i]); //._frames[n];
 				var frame = this.createBitmap(str[i],this.spritesheet_digits);
 				//frame.visible = true; 
 				//frame.gotoAndStop(str[i]); 
@@ -208,12 +210,17 @@
 			this._lifeContainer.removeAllChildren();
 		}
  		//render life
-		offsetX = this._lifeIcon.x - 20;
-		str = this.player.life.toString();
+		offsetX = this._lifeIcon.x + 100;
+		
+		var str = this.player.life.toString();
+		//console.log('life', str);
 		for(var i = str.length - 1; i >= 0; i--)
 		{
 			var n = Number(str[i]);
- 			var frame = this.createBitmap(str[i],this.spritesheet_digits);
+ 			//var frame = this._digits.clone();
+			//frame.gotoAndStop(str[i]); //._frames[n];
+			var frame = this.createBitmap(str[i],this.spritesheet_digits);
+			//var frame = this.createBitmap(str[i],this.spritesheet_digits);
 			//var frame = this._digits.clone();
 			//frame.visible = true; 
 			//frame.gotoAndStop(str[i]); //._frames[n];
