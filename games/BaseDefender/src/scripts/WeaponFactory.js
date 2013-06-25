@@ -65,7 +65,7 @@
 		stage.onMouseUp = Atari.proxy(this.mouseUpHandler, this);
 		 //this._gatingIcon.onClick = Atari.proxy(this.mouseDownHandler, this); 
 		this.addChild(this._gatingIcon);
- 		this.tmp_gatling = new scope.Gatling();	
+ 		this.tmp_gatling = new scope.Gatling(stage);	
 		/* 
 		stage.addEventListener("stagemousemove", Atari.proxy(this.mouseMoveHandler, this) );
 		stage.addEventListener("stagemousedown", Atari.proxy(this.mouseDownHandler, this));
@@ -147,7 +147,7 @@
 	{
 		if(this.canCreate(this.tmp_gatling))
 		{
-			var g = new scope.Gatling();	
+			var g = new scope.Gatling(this.stage);	
 			this._dragWeapon = g;
 			this.placeWeapon(g, x, y);
 			this.stage.addChild(g);

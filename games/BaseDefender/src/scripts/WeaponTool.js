@@ -15,7 +15,7 @@
 		var sprite =  new  createjs.BitmapAnimation( spritesheet || this.spritesheet );
 		sprite.gotoAndPlay(name);
 		sprite.mouseEnabled = true;
- 
+		sprite.name = name;
 		return sprite;
 	} 
 	
@@ -31,10 +31,11 @@
 		this.spritesheet  = new GameLibs.SpriteSheetWrapper(scope.ImageManager._icon);
 		//icons
 		this.sellIcon = this.create("sellIcon");
-		this.upgradeIcon = this.create("upgradeIcon");
+ 		this.upgradeIcon = this.create("upgradeIcon");
 		this.upgradeDisabledIcon = this.create("upgradeDisabledIcon");
 		this.spritesheet_darkdigit  = new GameLibs.SpriteSheetWrapper(scope.ImageManager._digit);
  		this.upgradeDigit = new createjs.Container();
+		
 		//stage.addChild(this.upgradeDigit);
  	}	
 	
@@ -96,6 +97,9 @@
 	WeaponTool.prototype.remove = function()
 	{
 		if(this.rightIcon) this.removeChild(this.rightIcon);
+		if(this.upgradeDigit){
+			this.upgradeDigit.removeAllChildren();
+		}
 		this.stage.removeChild(this);
 		this.weapon = null;
 	}
@@ -134,6 +138,7 @@
 		//this._radiusCircle.x = -weapon.attackRadius - 2;
 		//this._radiusCircle.y = -weapon.attackRadius - 4;
 		this.addChild(this.upgradeDigit);
+		
 		this.tick();
 		this.stage.addChild(this);
 	}
@@ -155,9 +160,10 @@
 		//WeaponTool.superClass.render.call(this, context);
 		//WeaponTool.superClass._render.call(this, context);
 		
-		//if(this.upgradeDigit){
-		//	this.upgradeDigit.removeAllChildren();
-		//}
+		if(this.upgradeDigit){
+			this.upgradeDigit.removeAllChildren();
+		}
+		
 		if(scale >= 1)
 		{
 			//render sell number
@@ -194,7 +200,7 @@
 				this.upgradeDigit.addChild(frame);
 				offsetX -= scope.ImageManager._darkdigit["frames"][ str[i] ][2] * 0.7-1;
 			}
-			console.log('**** WeaponTool scale'  ,scale , str, this.upgradeDigit);
+			//console.log('**** WeaponTool scale'  ,scale , str, this.upgradeDigit);
 		
 		}	
 	}

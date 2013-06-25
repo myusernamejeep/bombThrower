@@ -4,7 +4,7 @@
 	var game = ns.game ;
 
 	 
-	Gatling = function()
+	Gatling = function(stage)
 	{
  		this.id = UID.get(); 	
 		this.name = "gatling";	
@@ -27,7 +27,7 @@
 		this._currentAngleFrame = -1;
 		this._currentAngle = 0;
 		//this._create();
-		this.initialize( );
+		this.initialize(stage);
 	}
 	Gatling.prototype = new createjs.Container(); // inherit from Container
 	Gatling.prototype.Container_initialize = Gatling.prototype.initialize;
@@ -79,20 +79,20 @@
 		if(this.attackRadius < 200) this.attackRadius = this.attackRadius + 10;
 		this.turnSpeed += 2;
 		this.realTurnSpeed +=2;
+		console.log('upgrade', this.turnSpeed ,  this.attackRadius, this.minDamage , this.maxDamage );
+		this.tick();
 	}
 	Gatling.prototype.createBitmap = function(name, spritesheet) {	
  
 		var sprite =  new  createjs.BitmapAnimation( spritesheet || this.spritesheet );
-		sprite.gotoAndPlay(name);
+		sprite.gotoAndStop(name);
 		sprite.mouseEnabled = true;
  
 		return sprite;
 	} 
-	Gatling.prototype.initialize = function( ){
+	Gatling.prototype.initialize = function(stage ){
 		this.Container_initialize();
-		
-	//Gatling.prototype._create = function()
-	//{
+		this.stage = stage;
 		//set level
 		this.setLevel(this, 0);
 		this.spritesheet_idle  = new GameLibs.SpriteSheetWrapper(scope.ImageManager._gatling);
@@ -100,29 +100,46 @@
 		this.sprite_idle = this.createBitmap("idle", this.spritesheet_idle);
 		this.sprite_attack1 = this.createBitmap("attack1", this.spritesheet_gatling_attack1);
 		this.sprite_attack1.visible = false;
+		this.levelDigit = new createjs.Container();
 		
+		this.spritesheet_yellowdigit  = new GameLibs.SpriteSheetWrapper(this.stage.assets.yellow_digit);
 		this.addChild(this.sprite_idle);
 		this.addChild(this.sprite_attack1);
 		//note: here we only have bitmaps for right side, we use scaleX=-1 for flipping to left side
-		/*
-		//idle level1
-		this.addFrame(ImageManager.gatling.idle1);
-		//attack level1
-		this.addFrame(ImageManager.gatling.attack1);
-		//towards top by default
-		this.gotoAndStop(1);
-		*/
+		this.addChild(this.levelDigit);
+				
+		this.tick();
 	}
+	
+	Gatling.prototype.tick = function()
+	{
+		if(this.levelDigit){
+			this.levelDigit.removeAllChildren();
+		}
+		var str = this.level + 1;
+ 		var str = str.toString();
+		var offsetX =  25 - (35-str.length*7)*0.5;
+		var offsetY =  30;
+		for(var i = str.length - 1; i >= 0; i--)
+		{
+			var frame = this.createBitmap(str[i],this.spritesheet_yellowdigit);
+			frame.scaleX = frame.scaleY = 0.7;
+			frame.x = offsetX ;
+			frame.y = offsetY;
+			this.levelDigit.addChild(frame);
+			offsetX -= this.spritesheet_yellowdigit["_frames"][ str[i] ][2] *  0.7-1;
+		}
+		console.log('Gatling tick', this.levelDigit  , this.level, str.length, this.spritesheet_yellowdigit["_frames"]);
+		
+ 	}
 
 	Gatling.prototype.stop = function()
 	{
 		this.status = this.IDLE;
-		//var frame = this.getRealFrame(this._currentAngleFrame, this._currentAngle);
-		//this.gotoAndStop("idle");
-		this.sprite_idle.visible = true;
+  		this.sprite_idle.visible = true;
 		this.sprite_attack1.visible = false;
-		//Gatling.superClass.stop.call(this);
-	}
+		this.sprite_idle.gotoAndPlay("idle");
+ 	}
 
 	Gatling.prototype.getDamange = function()
 	{
