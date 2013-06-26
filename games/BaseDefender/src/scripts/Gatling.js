@@ -26,6 +26,12 @@
 		this._fireTime = 0;
 		this._currentAngleFrame = -1;
 		this._currentAngle = 0;
+		
+		this.maxHealth = 0;
+		this.health = 0;	
+		this._healthBar = null;	
+		this._healthBarBg = null;	
+		
 		//this._create();
 		this.initialize(stage);
 	}
@@ -39,20 +45,39 @@
 	Gatling.prototype.FIRE = "fire";
 
 	Gatling.prototype.currentLevel = 0;
-	Gatling.prototype.levels = [{cost:50, sellMoney:25, upgradeMoney:45, minDamage:10, maxDamage:20, attackRadius:135, turnSpeed:300},
-					  {cost:90, sellMoney:45, upgradeMoney:65, minDamage:20, maxDamage:50, attackRadius:160, turnSpeed:300},
-					  {cost:150, sellMoney:75, upgradeMoney:95, minDamage:50, maxDamage:80, attackRadius:200, turnSpeed:300}];
+	Gatling.prototype.levels = [{cost:50, sellMoney:25, upgradeMoney:45, minDamage:10, maxDamage:20, attackRadius:135, turnSpeed:300, maxHealth:500},
+					  {cost:90, sellMoney:45, upgradeMoney:65, minDamage:20, maxDamage:50, attackRadius:160, turnSpeed:300, maxHealth:1000},
+					  {cost:150, sellMoney:75, upgradeMoney:95, minDamage:50, maxDamage:80, attackRadius:200, turnSpeed:300, maxHealth:1500}];
 
 	Gatling.prototype.setLevel = function(target, level)
 	{
-		target.level = level;
-		target.cost = this.levels[level].cost;
-		target.sellMoney = this.levels[level].sellMoney;
-		target.upgradeMoney = this.levels[level].upgradeMoney;
-		target.minDamage = this.levels[level].minDamage;
-		target.maxDamage = this.levels[level].maxDamage;
-		target.attackRadius = this.levels[level].attackRadius;
-		target.realTurnSpeed = target.turnSpeed = this.levels[level].turnSpeed;
+	
+		if(level >= this.levels.length)
+		{
+			var nowLevel = this.levels[level-1];
+			var nextLevel = this.levels[level] = {};
+			this.levels[level].cost = nowLevel.cost*1.50>>0;
+			this.levels[level].sellMoney = nowLevel.sellMoney*1.50>>0;
+			this.levels[level].upgradeMoney = nowLevel.upgradeMoney*1.50>>0;
+			this.levels[level].minDamage = nowLevel.minDamage*1.30>>0;
+			this.levels[level].maxDamage = nowLevel.maxDamage*1.30>>0;
+			this.levels[level].attackRadius = nowLevel.attackRadius*1.20>>0;
+ 			this.levels[level].turnSpeed = nowLevel.turnSpeed*1.10>>0;
+			this.levels[level].maxHealth = nowLevel.maxHealth*1.20>>0;
+ 		}
+		
+		if(target)
+		{
+			target.level = level;
+			target.cost = this.levels[level].cost;
+			target.sellMoney = this.levels[level].sellMoney;
+			target.upgradeMoney = this.levels[level].upgradeMoney;
+			target.minDamage = this.levels[level].minDamage;
+			target.maxDamage = this.levels[level].maxDamage;
+			target.attackRadius = this.levels[level].attackRadius;
+			target.realTurnSpeed = target.turnSpeed = this.levels[level].turnSpeed;
+ 			target.health = this.levels[level].maxHealth;
+		}
 	}
 
 	Gatling.prototype.getLevel = function(level)
@@ -79,13 +104,18 @@
 		if(this.attackRadius < 200) this.attackRadius = this.attackRadius + 10;
 		this.turnSpeed += 2;
 		this.realTurnSpeed +=2;
-		console.log('upgrade', this.turnSpeed ,  this.attackRadius, this.minDamage , this.maxDamage );
+		this.health = this.maxHealth*1.20>>0;
+		console.log('upgrade', this.turnSpeed ,  this.attackRadius, this.minDamage , this.maxDamage, this.health );
 		this.tick();
 	}
-	Gatling.prototype.createBitmap = function(name, spritesheet) {	
+	Gatling.prototype.createBitmap = function(name, spritesheet, play) {	
  
 		var sprite =  new  createjs.BitmapAnimation( spritesheet || this.spritesheet );
-		sprite.gotoAndStop(name);
+		if(play){
+			sprite.gotoAndPlay(name);
+		}else{
+			sprite.gotoAndStop(name);
+		}
 		sprite.mouseEnabled = true;
  
 		return sprite;
@@ -107,7 +137,26 @@
 		this.addChild(this.sprite_attack1);
 		//note: here we only have bitmaps for right side, we use scaleX=-1 for flipping to left side
 		this.addChild(this.levelDigit);
-				
+		
+		// health
+		this.healthContainer = new createjs.Container();
+		var x = -18;
+		var y = -50;
+		//health red bg
+		this.spritesheet_icon  = new GameLibs.SpriteSheetWrapper(scope.ImageManager._icon);
+		var bg = this.createBitmap("healthRed", this.spritesheet_icon);
+		bg.x = x;
+		bg.y = y;
+		this._healthBarBg = bg;
+		this.healthContainer.addChild(bg);
+		//health green bar
+		var bar = this.createBitmap("healthGreen", this.spritesheet_icon);
+		bar.x = x;
+		bar.y = y;
+		this._healthBar = bar;
+		this.healthContainer.addChild(bar);
+		this.addChild(this.healthContainer);
+		
 		this.tick();
 	}
 	
@@ -140,7 +189,48 @@
 		this.sprite_attack1.visible = false;
 		this.sprite_idle.gotoAndPlay("idle");
  	}
+	
+	Gatling.prototype.getShot = function(damage)
+	{
+		this.health -= damage;
+		if(this.health < 0) this.health = 0;
+		
+		//update health bar
+		var percent = this.health / this.maxHealth;
+		//make it bigger than 1 to avoid render error
+		var healthWidth = Math.round(40*percent) || 1;
+		if(this._healthBar) this._healthBar.scaleX = percent;
+ 	}
+	
+	Gatling.prototype.animateDeath = function()
+	{
+		this.removeChild(this._healthBar);
+		this.removeChild(this._healthBarBg);
+		this._healthBar = null;
+		this._healthBarBg = null;
+		this._avatar.anim_death = true;
+		this.sprite_idle.visible = true;
+		this.sprite_attack1.visible = false;
+		this.sprite_idle.gotoAndPlay("idle");
+		//
+		this.spritesheet_MCAssets  = new GameLibs.SpriteSheetWrapper(this.stage.assets.MCAssets);
+ 		var explosion = this.createBitmap("explosion", this.spritesheet_MCAssets);
+		explosion.x = this.sprite_idle.x;
+		explosion.y = this.sprite_idle.y;
+		this.addChild(explosion);
+		explosion.gotoAndPlay("explosion");
+		
+		var self = this;
+		explosion.onAnimationEnd = function(){
+			self.parent.removeChild(self);
+		};
+	}
 
+	Gatling.prototype.isDead = function()
+	{	
+		return this.health == 0;
+	}
+	
 	Gatling.prototype.getDamange = function()
 	{
 		return Math.round(Math.random()*(this.maxDamage - this.minDamage)) + this.minDamage;

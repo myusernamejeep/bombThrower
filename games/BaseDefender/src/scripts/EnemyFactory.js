@@ -81,7 +81,11 @@
 			return;
 		}
 		
-		var s = new scope.Soldier();
+		if(this.roundCount % 5 == 0){
+			var s = new scope.ZombieSoldier(this.stage);
+		}else{
+			var s = new scope.Soldier(this.stage);
+		}
 		s.x = this._soldierStartX;
 		s.y = this._soldierStartY;
 		s.mouseEnabled = false;

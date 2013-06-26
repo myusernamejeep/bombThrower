@@ -3,7 +3,7 @@
 	var ns = scope;
 	var game = ns.game ;
 
-	Soldier = function()
+	Soldier = function(stage)
 	{
  		this.name = UID.get(); 	
 		
@@ -22,7 +22,7 @@
 		this._avatar = null;
 		this._healthBar = null;	
 		this._healthBarBg = null;	
-		
+		this.stage = stage;
 		this.initialize();
  	}
  	Soldier.prototype = new createjs.Container(); // inherit from Container
@@ -32,12 +32,13 @@
  	Soldier.prototype.initialize = function(){
 		this.Container_initialize();
 		this._create();
+		this._createHealthBar();
 	}	
 	Soldier.prototype._tick = function () {
 		this.Container_tick();
     }
 	Soldier.prototype.currentLevel = 0;
-	Soldier.prototype.levels = [{maxHealth:100, score:10, money:3, speed:5}];
+	Soldier.prototype.levels = [{maxHealth:100, score:10, money:3, speed:5, speed:5}];
 
 	Soldier.prototype.setLevel = function(target, level)
 	{
@@ -61,7 +62,7 @@
 			target.speed = this.levels[level].speed;
 		}	
 	}
-
+ 
 	Soldier.prototype.getLevel = function(level)
 	{
 		if(level == undefined) level = this.currentLevel;
@@ -74,46 +75,47 @@
 		this.currentLevel++;
 		return true;
 	}
-	Soldier.prototype.createBitmap = function(name, spritesheet) {	
- 
-		var sprite =  new  createjs.BitmapAnimation( spritesheet || this.spritesheet );
-		sprite.gotoAndPlay(name);
- 
-		return sprite;
-	} 
+	Soldier.prototype.attackAble = function()
+	{
+		return false;
+	}
+	Soldier.prototype.isInAttackRadius = function(distance)
+	{
+		return distance <= this.attackRadius;
+	}
 	Soldier.prototype._create = function()
 	{
-		//set level
+		console.log('scope', scope );
+		
+ 		//set level
 		this.setLevel(this, this.currentLevel);	
 		//create avatar
 		this.spritesheet  = new GameLibs.SpriteSheetWrapper(scope.ImageManager._soldier);
-		this._avatar = this.createBitmap("walkRight", this.spritesheet);
-		/*
-		this._avatar = new MovieClip();	
-		//walk
-		this._avatar.addFrame(ImageManager.soldier.walkRight);
-		this._avatar.addFrame(ImageManager.soldier.walkTop);
-		this._avatar.addFrame(ImageManager.soldier.walkDown);
-		//death
-		this._avatar.addFrame(ImageManager.soldier.deathRightForwards);
-		this._avatar.addFrame(ImageManager.soldier.deathRightBackwards);
-		this._avatar.addFrame(ImageManager.soldier.deathDownBackwards);
-		this._avatar.addFrame(ImageManager.soldier.deathTopForwards);*/
+ 		this._avatar = this.createBitmap("walkRight", this.spritesheet);
 		this.addChild(this._avatar);
-		
+	}
+	
+	Soldier.prototype.createBitmap = function(name, spritesheet) {	
+ 
+		var sprite = new createjs.BitmapAnimation( spritesheet );
+		sprite.gotoAndPlay(name);
+		sprite.mouseEnabled = true;
+ 
+		return sprite;
+	} 
+	Soldier.prototype._createHealthBar = function()
+	{	
 		var x = -18;
 		var y = -50;
 		//health red bg
 		this.spritesheet_icon  = new GameLibs.SpriteSheetWrapper(scope.ImageManager._icon);
 		var bg = this.createBitmap("healthRed", this.spritesheet_icon);
-		//var bg = new Bitmap(ImageManager.icon.src, ImageManager.icon.healthRed);
 		bg.x = x;
 		bg.y = y;
 		this._healthBarBg = bg;
 		this.addChild(bg);
 		//health green bar
 		var bar = this.createBitmap("healthGreen", this.spritesheet_icon);
-		//var bar = new Bitmap(ImageManager.icon.src, ImageManager.icon.healthGreen);
 		bar.x = x;
 		bar.y = y;
 		this._healthBar = bar;
@@ -123,7 +125,6 @@
 	Soldier.prototype.setDirection = function(direction)
 	{
 		if(!direction){ 
-			//console.debug("direction", direction, 'this.direction', this.direction);
 			return;
 		}
 		if(this.direction[0] == direction[0] && this.direction[1] == direction[1]) return;
@@ -156,7 +157,7 @@
 			this._avatar.gotoAndPlay("walkTop");
 		}
 	}
-
+	
 	Soldier.prototype.getShot = function(damage)
 	{
 		this.health -= damage;
@@ -206,7 +207,7 @@
 			self.parent.removeChild(self);
 		};
 	}
-
+	
 	Soldier.prototype.isDead = function()
 	{	
 		return this.health == 0;
@@ -230,8 +231,7 @@
 			this._avatar.stop();
 		}
 		
-		//Soldier.superClass.render.call(this, context);
-	}
+ 	}
 
 	scope.Soldier = Soldier;
 

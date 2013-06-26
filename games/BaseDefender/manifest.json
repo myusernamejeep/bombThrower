@@ -15,15 +15,19 @@
 	    "scripts/libs/movieclip-0.6.1.min.js",
 	    "scripts/Assets.js",
 		"scripts/Astar.js",
+		"scripts/ImageManager.js",
 		"scripts/Popup.js",
         "scripts/LevelManager.js",
  		"scripts/ScoreBoard.js",
  		"scripts/Player.js",
-		"scripts/ImageManager.js",
+		"scripts/Zombie.js",
+		 
 		"scripts/Gatling.js",
 		"scripts/WeaponFactory.js",
-		"scripts/EnemyFactory.js",
+		
 		"scripts/Soldier.js",
+		"scripts/ZombieSoldier.js",
+		"scripts/EnemyFactory.js",
 		"scripts/WeaponTool.js",
 		"scripts/ScoreBar.js",
 		"scripts/MainGame.js"
@@ -53,6 +57,12 @@
 		"images/yellow_digit.png" ,
 		{"id":"yarsAssetsAll", "src":"images/YarsAssets_All.json"},
         "images/YarsAssets_All.png",
+		
+		{"id":"MCAssets", "src":"images/MC-Assets.json"},
+        "images/MC-Assets.png",
+		
+		
+		{"id": "monster_zombie", "src":  "images/sprite/Monsters/Monsters_All_noBG/Zombie_noBG.png"}, 
 		
 		{"id": "sounds_grasslands", "src": "sounds/grasslands.mp3"},
 		{"id": "loseCoda", "src": "sounds/Lose_Coda.mp3"},

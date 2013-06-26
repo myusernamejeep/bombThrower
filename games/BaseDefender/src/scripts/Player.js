@@ -225,8 +225,55 @@
 				gatling.stop();
 			}
 		}	
+		
+		this.enemyAttack();
 	}
 
+	Player.prototype.enemyAttack = function()
+	{	
+		//check enemy for auto attacking
+		for(var i = 0; i < this.targets.length; i++)
+		{
+			var enemy = this.targets[i];
+			if(!enemy.attackAble()){
+				continue;
+			}
+			//correct real turn speed according the fastForward parameter
+			//gatling.realTurnSpeed = Math.round(gatling.turnSpeed/this.fastForward);
+
+			//find target for gatling, if target is null or out of attack radius or escaped...
+			var needChangeTarget = enemy.target == null || !this.checkInAttackRadius(enemy, enemy.target)
+								   || (enemy.target.x >= this.gameInfo.width + enemy.target.width);
+			if(needChangeTarget)
+			{		
+				var newTarget = this.findTarget(enemy, this.weapons);
+				enemy.target = newTarget;
+			}		
+			
+			//aim and fire to target
+			if(enemy.target)
+			{
+				//hit: means can get shot for target
+				var hit = enemy.aim(enemy.target, true);
+				if(hit)
+				{			
+					var damage = enemy.getDamange();
+					enemy.target.getShot(damage);
+				}
+				
+				//is dead?
+				if(enemy.target.isDead()) 
+				{
+					//enemy.stop();
+					enemy.target = null;
+				}
+			}else
+			{
+				//enemy.stop();
+			}
+		}	
+	}
+	
 	Player.prototype.moveTarget = function(target)
 	{
 		if(target.x < this.startPoint[0])
