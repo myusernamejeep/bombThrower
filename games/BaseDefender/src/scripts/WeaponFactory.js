@@ -5,23 +5,28 @@
 
 	WeaponFactory = function(stage, player, weaponTool, mainGame)
 	{
+		this.offsetX = 0;
+		this.offsetY = 0;
+		
 		this.initialize(stage, player, weaponTool, mainGame);		
 	}
  	WeaponFactory.prototype = new createjs.Container(); // inherit from Container
 	WeaponFactory.prototype.Container_initialize = WeaponFactory.prototype.initialize;
 	WeaponFactory.prototype.Container_tick = WeaponFactory.prototype._tick; 
-	WeaponFactory.prototype._tick = function () {
+	WeaponFactory.prototype._tick = function () 
+	{
 		this.Container_tick();
     }
-	WeaponFactory.prototype.createBitmap = function(name, sprite) {	
- 
+	WeaponFactory.prototype.createBitmap = function(name, sprite) 
+	{	
 		var sprite =  new  createjs.BitmapAnimation( sprite || this.spritesheet );
 		sprite.gotoAndPlay(name);
 		sprite.mouseEnabled = true;
  
 		return sprite;
 	} 
- 	WeaponFactory.prototype.initialize = function(stage, player, weaponTool, mainGame){
+ 	WeaponFactory.prototype.initialize = function(stage, player, weaponTool, mainGame)
+	{
 		this.Container_initialize();
 		
 		this.mainGame = mainGame;
@@ -30,11 +35,30 @@
 		this.scene = stage.getChildAt(0);
 		this.player = player;	
 		this.weaponTool = weaponTool;	
+		
+		//register mouse event for creating gating
+		stage.onMouseMove = Atari.proxy(this.mouseMoveHandler, this);
+		stage.onMouseDown = Atari.proxy(this.mouseDownHandler, this);
+		stage.onMouseUp = Atari.proxy(this.mouseUpHandler, this);
+ 		
+		this.MinigunIcon = new scope.MinigunIcon(stage, player, weaponTool, mainGame);
+		this.addChild(this.MinigunIcon);
+ 		this.offsetX += this.MinigunIcon.width + 20;
+		//this.addMissileIcon();
+		//this.addGammaBeamIcon();
+		/*
+		this.addGrapplingHookIcon();
+		this.addMegaClusterGrenadeIcon();
+		this.addNukeIcon();
+		this.addGameOverNukeIcon(); */
+	}
+	
+	WeaponFactory.prototype.addIcon = function()
+	{
  		//gatling icon
 		this.spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager._icon);
 		this._gatingIcon = this.createBitmap("gatlingIcon-0", this.spritesheet );
 		this._gatingIcon.name =  "gatingIcon"; 	
-		
  		this._gatingIcon.width = 77;
 		this._gatingIcon.height = 79;
 		this._gatingIcon.onMouseOver = function(){
@@ -44,42 +68,201 @@
 			document.body.style.cursor = 'default';
 		};
 		this._gatingIcon.addEventListener("mousedown", function(evt) {
-			// bump the target in front of it's siblings:
-			var o = evt.target;
+ 			var o = evt.target;
 			o.parent.addChild(o);
 			var offset = {x:o.x-evt.stageX, y:o.y-evt.stageY};
-			//console.log('mousedown'  , o );
- 		
-			// add a listener to the event object's mouseMove event
-			// this will be active until the user releases the mouse button:
+ 
 			evt.addEventListener("mousemove", function(ev) {
 				o.x = ev.stageX+offset.x;
 				o.y = ev.stageY+offset.y;
-				//console.log('mousemove'  , o );// indicate that the stage should be updated on the next tick:
-				update = true;
+ 				update = true;
 			});
 		});
-		//register mouse event for creating gating
-		stage.onMouseMove = Atari.proxy(this.mouseMoveHandler, this);
-		stage.onMouseDown = Atari.proxy(this.mouseDownHandler, this);
-		stage.onMouseUp = Atari.proxy(this.mouseUpHandler, this);
-		 //this._gatingIcon.onClick = Atari.proxy(this.mouseDownHandler, this); 
 		this.addChild(this._gatingIcon);
- 		this.tmp_gatling = new scope.Gatling(stage);	
-		/* 
-		stage.addEventListener("stagemousemove", Atari.proxy(this.mouseMoveHandler, this) );
-		stage.addEventListener("stagemousedown", Atari.proxy(this.mouseDownHandler, this));
-		stage.addEventListener("stagemouseup", Atari.proxy(this.mouseUpHandler, this));
-		 */
- 	}	
+ 		this.tmp_gatling = new scope.Gatling(stage);
+	}
+ 
+	WeaponFactory.prototype.addMissileIcon = function()
+	{
+		//Missile icon
+		var spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager.icons);
+		this.MissileIcon = this.createBitmap("Missile", spritesheet );
+		this.MissileIcon.name =  "MissileIcon"; 	
+ 		this.MissileIcon.width = 77;
+		this.MissileIcon.height = 79;
+		this.MissileIcon.onMouseOver = function(){
+			document.body.style.cursor = 'pointer';
+		};
+		this.MissileIcon.onMouseOut = function(){
+			document.body.style.cursor = 'default';
+		};
+		this.MissileIcon.addEventListener("mousedown", function(evt) {
+ 			var o = evt.target;
+			o.parent.addChild(o);
+			var offset = {x:o.x-evt.stageX, y:o.y-evt.stageY};
+ 
+			evt.addEventListener("mousemove", function(ev) {
+				o.x = ev.stageX+offset.x;
+				o.y = ev.stageY+offset.y;
+ 				update = true;
+			});
+		});
+		this.addChild(this.MissileIcon);
+ 		//this.tmp_gatling = new scope.Gatling(stage);
+	}
+		
+	WeaponFactory.prototype.addGammaBeamIcon = function()
+	{
+		//GammaBeam icon
+		var spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager.icons);
+		this.GammaBeamIcon = this.createBitmap("GammaBeam", spritesheet );
+		this.GammaBeamIcon.name =  "GammaBeamIcon"; 	
+ 		this.GammaBeamIcon.width = 77;
+		this.GammaBeamIcon.height = 79;
+		this.GammaBeamIcon.onMouseOver = function(){
+			document.body.style.cursor = 'pointer';
+		};
+		this.GammaBeamIcon.onMouseOut = function(){
+			document.body.style.cursor = 'default';
+		};
+		this.GammaBeamIcon.addEventListener("mousedown", function(evt) {
+ 			var o = evt.target;
+			o.parent.addChild(o);
+			var offset = {x:o.x-evt.stageX, y:o.y-evt.stageY};
+ 
+			evt.addEventListener("mousemove", function(ev) {
+				o.x = ev.stageX+offset.x;
+				o.y = ev.stageY+offset.y;
+ 				update = true;
+			});
+		});
+		this.addChild(this.GammaBeamIcon);
+ 		//this.tmp_gatling = new scope.Gatling(stage);
+	}
+
+	WeaponFactory.prototype.addGrapplingHookIcon = function()
+	{
+		//GrapplingHook icon
+		var spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager.icons);
+		this.GrapplingHookIcon = this.createBitmap("GrapplingHook", spritesheet );
+		this.GrapplingHookIcon.name =  "GrapplingHookIcon"; 	
+ 		this.GrapplingHookIcon.width = 77;
+		this.GrapplingHookIcon.height = 79;
+		this.GrapplingHookIcon.onMouseOver = function(){
+			document.body.style.cursor = 'pointer';
+		};
+		this.GrapplingHookIcon.onMouseOut = function(){
+			document.body.style.cursor = 'default';
+		};
+		this.GrapplingHookIcon.addEventListener("mousedown", function(evt) {
+ 			var o = evt.target;
+			o.parent.addChild(o);
+			var offset = {x:o.x-evt.stageX, y:o.y-evt.stageY};
+ 
+			evt.addEventListener("mousemove", function(ev) {
+				o.x = ev.stageX+offset.x;
+				o.y = ev.stageY+offset.y;
+ 				update = true;
+			});
+		});
+		this.addChild(this.GrapplingHookIcon);
+ 		//this.tmp_gatling = new scope.Gatling(stage);
+	}	
+
+	WeaponFactory.prototype.addMegaClusterGrenadeIcon = function()
+	{
+		//MegaClusterGrenade icon
+		var spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager.icons);
+		this.MegaClusterGrenadeIcon = this.createBitmap("MegaClusterGrenade", spritesheet );
+		this.MegaClusterGrenadeIcon.name =  "MegaClusterGrenadeIcon"; 	
+ 		this.MegaClusterGrenadeIcon.width = 77;
+		this.MegaClusterGrenadeIcon.height = 79;
+		this.MegaClusterGrenadeIcon.onMouseOver = function(){
+			document.body.style.cursor = 'pointer';
+		};
+		this.MegaClusterGrenadeIcon.onMouseOut = function(){
+			document.body.style.cursor = 'default';
+		};
+		this.MegaClusterGrenadeIcon.addEventListener("mousedown", function(evt) {
+ 			var o = evt.target;
+			o.parent.addChild(o);
+			var offset = {x:o.x-evt.stageX, y:o.y-evt.stageY};
+ 
+			evt.addEventListener("mousemove", function(ev) {
+				o.x = ev.stageX+offset.x;
+				o.y = ev.stageY+offset.y;
+ 				update = true;
+			});
+		});
+		this.addChild(this.MegaClusterGrenadeIcon);
+ 		//this.tmp_gatling = new scope.Gatling(stage);
+	}	
+
+	WeaponFactory.prototype.addNukeIcon = function()
+	{
+		//NukeIcon icon
+		var spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager.icons);
+		this.NukeIcon = this.createBitmap("Nuke", spritesheet );
+		this.NukeIcon.name =  "NukeIcon"; 	
+ 		this.NukeIcon.width = 77;
+		this.NukeIcon.height = 79;
+		this.NukeIcon.onMouseOver = function(){
+			document.body.style.cursor = 'pointer';
+		};
+		this.NukeIcon.onMouseOut = function(){
+			document.body.style.cursor = 'default';
+		};
+		this.NukeIcon.addEventListener("mousedown", function(evt) {
+ 			var o = evt.target;
+			o.parent.addChild(o);
+			var offset = {x:o.x-evt.stageX, y:o.y-evt.stageY};
+ 
+			evt.addEventListener("mousemove", function(ev) {
+				o.x = ev.stageX+offset.x;
+				o.y = ev.stageY+offset.y;
+ 				update = true;
+			});
+		});
+		this.addChild(this.NukeIcon);
+ 		//this.tmp_gatling = new scope.Gatling(stage);
+	}	
 	
+	WeaponFactory.prototype.addGameOverNukeIcon = function()
+	{
+		//GameOverNuke icon
+		var spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager.icons);
+		this.GameOverNukeIcon = this.createBitmap("GameOverNuke", spritesheet );
+		this.GameOverNukeIcon.name =  "NukeIcon"; 	
+ 		this.GameOverNukeIcon.width = 77;
+		this.GameOverNukeIcon.height = 79;
+		this.GameOverNukeIcon.onMouseOver = function(){
+			document.body.style.cursor = 'pointer';
+		};
+		this.GameOverNukeIcon.onMouseOut = function(){
+			document.body.style.cursor = 'default';
+		};
+		this.GameOverNukeIcon.addEventListener("mousedown", function(evt) {
+ 			var o = evt.target;
+			o.parent.addChild(o);
+			var offset = {x:o.x-evt.stageX, y:o.y-evt.stageY};
+ 
+			evt.addEventListener("mousemove", function(ev) {
+				o.x = ev.stageX+offset.x;
+				o.y = ev.stageY+offset.y;
+ 				update = true;
+			});
+		});
+		this.addChild(this.GameOverNukeIcon);
+ 		//this.tmp_gatling = new scope.Gatling(stage);
+	}	
+ 
 	WeaponFactory.prototype.mouseMoveHandler = function(e)
 	{
-		//console.log('mouseMoveHandler'  , this._dragWeapon );
- 		this.placeWeapon(this._dragWeapon, e.stageX,  e.stageY);
+  		this.placeWeapon(this._dragWeapon, e.stageX,  e.stageY);
 	}
 	
-	WeaponFactory.prototype.getElementOffset = function (elem) {
+	WeaponFactory.prototype.getElementOffset = function (elem) 
+	{
 		var left = elem.offsetLeft, top = elem.offsetTop;
 		while ((elem = elem.offsetParent) && elem != document.body && elem != document) {
 			left += elem.offsetLeft;
@@ -96,21 +279,11 @@
 		offsetY = offset.top;
 		var obj = this.stage.getObjectUnderPoint(this.stage.mouseX, this.stage.mouseY);
 		//var intersection = ndgmr.checkRectCollision(bird,pig.sprite);
-		//skip right button click
-		//console.log('mouseDownHandler', this.is_selected_weaponFactory  ,obj );
-		if(!this.is_selected_weaponFactory && obj.name ==  "gatingIcon" ){
-			//this._gatingIcon.hitTest(e.mouseX, e.mouseY) ){
-			//this._gatingIcon.hitTestPoint(e.stageX - offsetX, e.stageY - offsetY)
-			//console.log('**** mouseDownHandler createWeapon'  , e.stageX,  e.stageY );
-			this.createWeapon(e.stageX,  e.stageY);
+		console.log('mouseDownHandler obj'  , obj );
+		if(!this.is_selected_weaponFactory && obj.name && obj.name.indexOf('Icon') != -1  &&  obj.name != 'sellIcon' &&  obj.name != "upgradeIcon" ){
+			this.createWeapon(obj , e.stageX,  e.stageY);
 			this.is_selected_weaponFactory = true;
 		}
- 		/*
-		if (e.button == 2) return;
-		if (this._gatingIcon.currentFrame == 2 && this._gatingIcon.hitTestPoint(e.stageX - offsetX, e.stageY-offsetY))
-		{
-			this.createWeapon();
-		}	*/
 	}
 
 	WeaponFactory.prototype.mouseUpHandler = function(e)
@@ -123,39 +296,53 @@
 		{		
 			this.player.addWeapon(this._dragWeapon);
 			this.player.money -= this._dragWeapon.cost;
-			this.updateWeapon();
+			this.updateWeapon(this._dragWeaponIcon);
 			this.weaponTool.removeRadius();
 		}else
 		{
 			this._dragWeapon.parent.removeChild(this._dragWeapon);		
 		}
 		this._dragWeapon = null;
+		this._dragWeaponIcon = null;
 	}
-
-	WeaponFactory.prototype.updateWeapon = function()
+	WeaponFactory.prototype.tick = function()
 	{
-		if(this.canCreate(this.tmp_gatling))
+		for(var i = 0; i < this.children.length; i++)
+		{		
+			var icon_instance = this.children[i];
+			this.updateWeapon(icon_instance.icon);
+		}
+	}
+	WeaponFactory.prototype.updateWeapon = function(icon)
+	{
+		if (!icon) return false;
+		//console.log('icon'  , icon );
+		if(this.canCreate(icon.tmp_instance))
 		{
-			this._gatingIcon.gotoAndStop("gatlingIcon-1");
+			icon.parent.animateCanCreate(true); //.gotoAndStop("gatlingIcon-1");
 		}else
 		{
-			this._gatingIcon.gotoAndStop("gatlingIcon-0");
+			icon.paren.animateCanCreate(false); //this._gatingIcon.gotoAndStop("gatlingIcon-0");
 		}
 	}
 
-	WeaponFactory.prototype.createWeapon = function(x, y)
+	WeaponFactory.prototype.createWeapon = function(obj, x, y)
 	{
-		if(this.canCreate(this.tmp_gatling))
+		// obj is weapon instance ex. gatling
+		console.log('createWeapon'  , obj );
+		if(this.canCreate(obj.tmp_instance))
 		{
-			var g = new scope.Gatling(this.stage);	
+			var g = new scope[obj.className](this.stage);	
 			this._dragWeapon = g;
+			this._dragWeaponIcon = obj;
 			this.placeWeapon(g, x, y);
 			this.stage.addChild(g);
 			//g.onClick = Atari.proxy(this.GatlingmouseDownHandler, this);
 		}
 	}
 	
-	WeaponFactory.prototype.GatlingmouseDownHandler = function(){
+	WeaponFactory.prototype.GatlingmouseDownHandler = function()
+	{
 		this.mainGame.selectedWeapon = obj;
 		//obj.drawRadius(true);
 		this.weaponTool.show(this.mainGame.selectedWeapon, true, true);

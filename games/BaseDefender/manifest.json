@@ -10,31 +10,44 @@
     "gameClass": "MainGame.js",
 
     "dependencies": [
-  	    "scripts/libs/jquery-1.8.3.min.js",
-		"scripts/libs/ndgmr.Collision.js",
-	    "scripts/libs/movieclip-0.6.1.min.js",
+  	     
 	    "scripts/Assets.js",
-		"scripts/Astar.js",
 		"scripts/ImageManager.js",
-		"scripts/Popup.js",
-        "scripts/LevelManager.js",
- 		"scripts/ScoreBoard.js",
- 		"scripts/Player.js",
-		"scripts/Zombie.js",
+		"scripts/LevelManager.js",
+ 		"scripts/libs/Astar.js",
+		"scripts/components/Popup.js",
+        "scripts/components/ScoreBoard.js",
+ 		"scripts/components/ScoreBar.js",
 		 
-		"scripts/Gatling.js",
+ 		"scripts/units/characters/spriteAnim/Zombie.js",
+
+		"scripts/units/characters/Player.js",
 		"scripts/WeaponFactory.js",
-		
-		"scripts/Soldier.js",
-		"scripts/ZombieSoldier.js",
+		"scripts/components/icons/Icon.js",
+		"scripts/components/icons/MinigunIcon.js",
+ 
 		"scripts/EnemyFactory.js",
 		"scripts/WeaponTool.js",
-		"scripts/ScoreBar.js",
-		"scripts/MainGame.js"
+		"scripts/MainGame.js",
    	  
+		"scripts/units/turret/Gatling.js",
+		
+		
+		"scripts/units/turret/Turret.js",
+		"scripts/units/turret/LightTurret.js",
+		"scripts/units/turret/HeavyTurret.js",
+		"scripts/units/turret/TeslaCannon.js",
+		
+		"scripts/units/characters/Character.js",
+		"scripts/units/characters/Soldier.js",
+		"scripts/units/characters/ZombieSoldier.js",
+		"scripts/units/characters/ZombieSoldierAntiGatling.js"
+		
+		
     ],
 
-	"deployDependencies": ["scripts/centipede-min.js"
+	"deployDependencies": [
+		"scripts/centipede-min.js"
  	],
 
     "assets":   [
@@ -52,17 +65,14 @@
 		{"id": "soldier_01", "src": "images/soldier_01.png"},
 		{"id": "font", "src": "images/font.png"},
 		{"id": "other", "src": "images/other.png"},
-		{"id": "digits", "src": "images/digits.json"},
-		{"id": "yellow_digit", "src": "images/yellow_digit.json"},
-		"images/yellow_digit.png" ,
-		{"id":"yarsAssetsAll", "src":"images/YarsAssets_All.json"},
-        "images/YarsAssets_All.png",
+  		{"id": "yellow_digit", "src": "images/yellow_digit.png"},
 		
-		{"id":"MCAssets", "src":"images/MC-Assets.json"},
-        "images/MC-Assets.png",
-		
-		
-		{"id": "monster_zombie", "src":  "images/sprite/Monsters/Monsters_All_noBG/Zombie_noBG.png"}, 
+        {"id": "Zombie_Slaughter", "src": "images/sprites/characters/Zombie_Slaughter.png"},
+		{"id": "monster_zombie", "src":  "images/sprites/Monsters/Monsters_All_noBG/Zombie_noBG.png"}, 
+	 
+        {"id":"turret", "src": "images/sprites/turret/turret.png"},
+		{"id":"weapon", "src": "images/sprites/turret/weapon.png"},
+        {"id":"icons", "src": "images/sprites/icons/icons.png"},
 		
 		{"id": "sounds_grasslands", "src": "sounds/grasslands.mp3"},
 		{"id": "loseCoda", "src": "sounds/Lose_Coda.mp3"},
