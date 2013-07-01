@@ -1,0 +1,66 @@
+{
+	"images": ["images/sprites/turret/turret.png"],
+	"frames": [
+
+		[128, 279, 42, 62], 
+		[430, 163, 78, 64], 
+		[418, 229, 90, 61], 
+		[2, 108, 68, 68], 
+		[128, 201, 45, 76], 
+		[2, 178, 68, 67], 
+		[326, 185, 90, 61], 
+		[430, 97, 78, 64], 
+		[129, 357, 61, 107], 
+		[2, 357, 62, 107], 
+		[313, 248, 62, 107], 
+		[66, 357, 61, 107], 
+		[65, 247, 61, 107], 
+		[249, 187, 62, 107], 
+		[185, 187, 62, 107], 
+		[2, 247, 61, 107], 
+		[114, 104, 69, 95], 
+		[2, 2, 110, 104], 
+		[326, 96, 102, 87], 
+		[222, 2, 104, 92], 
+		[433, 2, 77, 93], 
+		[328, 2, 103, 92], 
+		[222, 96, 102, 89], 
+		[114, 2, 106, 100]
+	],
+	"animations": {
+		
+			"light_turret_deg0":[2], 
+			"light_turret_deg45":[3], 
+			"light_turret_deg90":[4], 
+			"light_turret_deg135":[5], 
+			"light_turret_deg180":[6], 
+			"light_turret_deg215":[7], 
+		    "light_turret_deg270":[0], 
+			"light_turret_deg315":[1], 
+			"light_turret_idle":[4], 
+			"light_turret_atk":[2,3,4], 
+			
+			"tesla_deg315":[15], 
+			"tesla_deg270":[8], 
+			"tesla_deg215":[9], 
+			"tesla_deg180":[10], 
+			"tesla_deg135":[11], 
+			"tesla_deg90":[12], 
+			"tesla_deg45":[13], 
+			"tesla_deg0":[14], 
+			"tesla_idle":[12], 
+			"tesla_turret_atk":[14,13,12], 
+			
+			"turret_deg315":[23],
+			"turre_deg270":[16], 
+			"turret_deg215":[17], 
+			"turret_deg180":[18], 
+			"turret_deg135":[19], 
+			"turret_deg90":[20], 
+			"turret_deg45":[21], 
+			"turret_deg0":[22],
+			"turret_idle":[20],
+			"turret_atk":[22,21,20] 	
+			
+	} 
+}

@@ -5,18 +5,15 @@
 
 	WeaponFactory = function(stage, player, weaponTool, mainGame)
 	{
-		this.offsetX = 0;
-		this.offsetY = 0;
-		
+		this.offsetX = -150;
+		this.offsetY = 30;
+		this.marginX = 10;
 		this.initialize(stage, player, weaponTool, mainGame);		
 	}
  	WeaponFactory.prototype = new createjs.Container(); // inherit from Container
 	WeaponFactory.prototype.Container_initialize = WeaponFactory.prototype.initialize;
 	WeaponFactory.prototype.Container_tick = WeaponFactory.prototype._tick; 
-	WeaponFactory.prototype._tick = function () 
-	{
-		this.Container_tick();
-    }
+ 
 	WeaponFactory.prototype.createBitmap = function(name, sprite) 
 	{	
 		var sprite =  new  createjs.BitmapAnimation( sprite || this.spritesheet );
@@ -43,7 +40,35 @@
  		
 		this.MinigunIcon = new scope.MinigunIcon(stage, player, weaponTool, mainGame);
 		this.addChild(this.MinigunIcon);
- 		this.offsetX += this.MinigunIcon.width + 20;
+		this.MinigunIcon.x = this.offsetX;
+ 		this.MinigunIcon.y = this.offsetY;
+		this.offsetX += this.MinigunIcon.icon.width + this.marginX;
+		
+		this.MissileIcon = new scope.MissileIcon(stage, player, weaponTool, mainGame);
+		this.addChild(this.MissileIcon);
+ 		this.MissileIcon.x = this.offsetX;
+ 		this.MissileIcon.y = this.offsetY;
+		this.offsetX += this.MissileIcon.icon.width + this.marginX;
+		
+		this.GammaBeamIcon = new scope.GammaBeamIcon(stage, player, weaponTool, mainGame);
+		this.addChild(this.GammaBeamIcon);
+ 		this.GammaBeamIcon.x = this.offsetX;
+ 		this.GammaBeamIcon.y = this.offsetY;
+		this.offsetX += this.GammaBeamIcon.icon.width + this.marginX;
+	 
+		this.TeslaIcon = new scope.TeslaIcon(stage, player, weaponTool, mainGame);
+		this.addChild(this.TeslaIcon);
+ 		this.TeslaIcon.x = this.offsetX;
+ 		this.TeslaIcon.y = this.offsetY;
+		this.offsetX += this.TeslaIcon.icon.width + this.marginX;
+		 
+		this.MegaClusterGrenadeIcon = new scope.MegaClusterGrenadeIcon(stage, player, weaponTool, mainGame);
+		this.addChild(this.MegaClusterGrenadeIcon);
+ 		this.MegaClusterGrenadeIcon.x = this.offsetX;
+ 		this.MegaClusterGrenadeIcon.y = this.offsetY;
+		this.offsetX += this.MegaClusterGrenadeIcon.icon.width + this.marginX;
+		
+		//console.log(this.offsetX, this.offsetY, this.marginX);
 		//this.addMissileIcon();
 		//this.addGammaBeamIcon();
 		/*
@@ -140,7 +165,7 @@
  		//this.tmp_gatling = new scope.Gatling(stage);
 	}
 
-	WeaponFactory.prototype.addGrapplingHookIcon = function()
+	WeaponFactory.prototype.addTeslaIcon = function()
 	{
 		//GrapplingHook icon
 		var spritesheet = new GameLibs.SpriteSheetWrapper(scope.ImageManager.icons);
@@ -275,8 +300,8 @@
 	{	
 		var canvas = document.getElementById("gameCanvas");
 		var offset = this.getElementOffset(canvas);
-		offsetX = offset.left;
-		offsetY = offset.top;
+		//offsetX = offset.left;
+		//offsetY = offset.top;
 		var obj = this.stage.getObjectUnderPoint(this.stage.mouseX, this.stage.mouseY);
 		//var intersection = ndgmr.checkRectCollision(bird,pig.sprite);
 		console.log('mouseDownHandler obj'  , obj );
@@ -307,9 +332,11 @@
 	}
 	WeaponFactory.prototype.tick = function()
 	{
+		this.Container_tick();
 		for(var i = 0; i < this.children.length; i++)
 		{		
 			var icon_instance = this.children[i];
+			icon_instance.tick();
 			this.updateWeapon(icon_instance.icon);
 		}
 	}
@@ -322,7 +349,7 @@
 			icon.parent.animateCanCreate(true); //.gotoAndStop("gatlingIcon-1");
 		}else
 		{
-			icon.paren.animateCanCreate(false); //this._gatingIcon.gotoAndStop("gatlingIcon-0");
+			icon.parent.animateCanCreate(false); //this._gatingIcon.gotoAndStop("gatlingIcon-0");
 		}
 	}
 

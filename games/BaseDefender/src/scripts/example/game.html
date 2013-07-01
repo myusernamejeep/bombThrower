@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<style> 
+body {
+    background-color: #000;
+}
+</style>
+
+<script src="lib/easeljs-0.6.0.min.js"></script>
+<script src="JS/Platform.js"></script>
+<script src="JS/Hero.js"></script>
+<script src="JS/Crate.js"></script>
+
+<script>
+var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39;
+var canvas, stage, lfheld, rtheld, platforms, crates, hero, heroCenter, key, door, gameTxt;
+
+var keyDn = false, play=true, dir="right";
+var loaded = 0, vy = 0, vx = 0;
+var jumping = false, inAir = true, gravity = 2;
+
+var img = new Image();
+var bgimg = new Image();
+var kimg = new Image();
+var dimg = new Image();
+
+var platformW = [300, 100, 180, 260, 260, 100, 100];
+var platformX = [40, 220, 320, 580, 700, 760, 760];
+var platformY = [460, 380, 300, 250, 550, 350, 450];
+document.onkeydown=handleKeyDown;
+document.onkeyup=handleKeyUp;
+
+function init(){
+    canvas = document.getElementById("canvas"); 
+    stage = new createjs.Stage(canvas);
+    bgimg.onload = this.handleImageLoad;
+
+    bgimg.src = "img/scene.jpg";
+
+kimg.onload = this.handleImageLoad;
+
+kimg.src="img/key.png";
+
+dimg.onload = this.handleImageLoad;
+
+dimg.src = "img/door.jpg";
+
+img.onload = this.handleImageLoad;
+
+img.src = "img/hero.png";
+}
+
+function handleImageLoad(event) {
+    loaded+=1;
+    if (loaded==4){
+        start();
+    }
+}
+
+function handleKeyDown(e) {
+    if(!e){ var e = window.event; }
+    switch(e.keycode) {
+        case KEYCODE_LEFT: lfHeld = true;
+dir="left"; break;
+case KEYCODE_RIGHT: rtHeld = true;
+dir="right"; break;
+case KEYCODE_SPACE: jump(); break;
+    }
+}
+
+
+function handleKeyUp(e) {
+    if(!e){ var e = window.event; }
+    switch(e.keycode) {
+        case KEYCODE_LEFT: lfHeld = false;
+keyDn=false; hero.gotoAndStop("idle_h"); break;
+case KEYCODE_RIGHT: rtHeld = false;
+keyDn=false; hero.gotoAndStop("idle"); break;
+    }
+}
+
+
+
+
+function start(){
+    var bg = new createjs.Bitmap(bgimg);
+    stage.addChild(bg);
+    door = new createjs.Bitmap(dimg);
+    door.x = 131;
+    door.y = 384;
+    stage.addChild(door);
+    hero = new Hero(img);
+    hero.x = 80;
+    hero.y = 450;
+    stage.addChild(Hero);
+
+    crates = new Array();
+    paltforms = new Array();
+    for(i=0; i < platformW.length; i++){
+        var platform = new Platform(platformW[i],20);
+        platforms.push(platform);
+        stage.addChild(platform);
+        platform.x = platformX[i];
+        platform.y = platformY[i];
+    }
+
+for(j=0; j < 5; j++){
+    var crate = new Crate();
+    crates.push(crate);
+    stage.addChild(crate);
+    resetCrates(crate);
+}
+key = new createjs.Bitmap(kimg);
+key.x = 900;
+key.y = 490;
+stage.addChild(key);
+
+Ticker.setFPS(30);
+Ticker.addListener(window);
+stage.update();
+}
+
+function tick() {
+    heroCenter = hero.y-40;
+    if (play){
+        vy+=gravity;
+        if (inAir){
+            hero.y+=vy;
+        }
+        if (vy>15){
+            vy=15;
+        }
+for(i=0; i < platforms.length; i++){
+    if (hero.y >= platforms[i].y && hero.y<=(platforms[i].y+platforms[i].height) && hero.x>
+    platforms[i].x && hero.x<(platforms[i].
+    x+platforms[i].width)){;
+    hero.y=platforms[i].y;
+    vy=0;
+    jumping = false;
+    inAir = false;
+    break;
+    }else{
+        inAir = true;
+    }
+}
+for(j=0; j < crates.length; j++){
+    var ct = crates[j];
+    ct.y+=ct.speed;
+    ct.rotation+=3;
+    if (ct.y>650){
+        resetCrates(ct);
+    }
+    if (collisionHero (ct.x, ct.y, 20)){
+        gameOver();}
+}
+if (collisionHero (key.x+20, key.y+20,
+20)){
+    key.visible=false;
+    door.visible=false;
+}
+if (collisionHero (door.x+20, door.y+40,
+20) && key.visible==false){nextLevel();}
+if (lfHeld){vx = -5;}
+if (rtHeld){vx = 5;}
+
+if(lfHeld && keyDn==false && inAir==false)
+{
+    hero.gotoAndPlay("walk_h");
+    keyDn=true;
+}
+if(rtHeld && keyDn==false &&
+inAir==false){
+    hero.gotoAndPlay("walk");
+    keyDn=true;
+}
+if (dir=="left" && keyDn==false &&
+inAir==false){
+    hero.gotoAndStop("idle_h");
+}
+if (dir=="right" && keyDn==false &&
+inAir==false){
+    hero.gotoAndStop("idle");
+}
+
+hero.x+=vx;
+vx=vx*0.5;
+if (hero.y>610){
+    gameOver();
+}
+    }
+    stage.update();
+}
+
+function end(){
+    play=false;
+    var l = crates.length;
+    for (var i=0; i<l; i++){
+        var c = crates[i];
+        resetCrates(c);
+    }
+    hero.visible=false;
+    stage.update();
+}
+
+function nextLevel(){
+    gameTxt = new createjs.Text("Well Done\n\n",
+"36px Arial", "#000");
+ gameTxt.text += "Prepare for Level 2";
+ gameTxt.textAlign = "center";
+ gameTxt.x = canvas.width / 2;
+ gameTxt.y = canvas.height / 4;
+ stage.addChild(gameTxt);
+ end();
+}
+function gameOver(){
+    gameTxt = new createjs.Text("Game Over\n\n",
+    "36px Arial", "#000");
+    gameTxt.text += "Click to Play Again.";
+    gameTxt.textAlign = "center";
+    gameTxt.x = canvas.width / 2;
+    gameTxt.y = canvas.height / 4;
+    stage.addChild(gameTxt);
+    end();
+    canvas.onclick = handleClick;
+}
+
+function handleClick() {
+    canvas.onclick = null;
+    hero.visible=true;
+    hero.x = 80;
+    hero.y = 450;
+    door.visible=true;
+    key.visible=true;
+    stage.removeChild(gameTxt);
+    play=true;
+}
+function collisionHero (xPos, yPos,
+Radius){
+    var distX = xPos - hero.x;
+    var distY = yPos - heroCenter;
+    var distR = Radius + 20;
+    if (distX * distX + distY * distY <=
+distR * distR){
+    return true;
+}
+}
+function jump(){
+    if (jumping == false && inAir == false){
+        if (dir=="right"){
+            hero.gotoAndStop("jump");
+        }else{
+            hero.gotoAndStop("jump_h");
+        }
+        hero.y -=20;
+        vy = -25;
+        jumping = true;
+        keyDn=false;
+    }
+}
+function resetCrates(crt) {
+    crt.x = canvas.width * Math.random()|0;
+    crt.y = 0 - Math.random()*500;
+    crt.speed = (Math.random()*5)+8;
+}
+
+
+
+
+
+</script>
+
+<title>Game</title>
+</head>
+
+<body onload="init();">
+
+
+
+
+<canvas id="canvas" width="960px" height="600px"></canvas>
+
+
+
+</body>
+</html>

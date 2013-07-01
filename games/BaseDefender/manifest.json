@@ -25,7 +25,14 @@
 		"scripts/WeaponFactory.js",
 		"scripts/components/icons/Icon.js",
 		"scripts/components/icons/MinigunIcon.js",
- 
+		"scripts/components/icons/MissileIcon.js",
+		"scripts/components/icons/GammaBeamIcon.js",
+		"scripts/components/icons/TeslaIcon.js",
+ 		"scripts/components/icons/MegaClusterGrenadeIcon.js",
+		
+		"scripts/units/Missile.js",
+		"scripts/units/Blast.js",
+		
 		"scripts/EnemyFactory.js",
 		"scripts/WeaponTool.js",
 		"scripts/MainGame.js",
@@ -82,7 +89,18 @@
 		{"id": "DeathCry", "src": "sounds/DeathCry.wav"} ,
 		{"id": "LevelUp", "src": "sounds/LevelUp-ItemGet.wav"} ,
 		{"id": "Hurt", "src": "sounds/Hurt.wav"} ,
-		{"id": "Collapse", "src": "sounds/Collapse.wav"} 
+		{"id": "Collapse", "src": "sounds/Collapse.wav"},
+
+		{"id":"fire", "src":"sounds/sfx/Fire_01.mp3", "data":3},
+        {"id":"player_killed", "src":"sounds/sfx/Player_Killed.mp3"},
+        {"id":"missileFire", "src":"sounds/sfx/Zorlon_Cannon_Fire_01.mp3", "data":2},
+        {"id":"qotile_destroyed", "src":"sounds/sfx/Qotile_Destroyed.mp3"},
+         {"id":"qotileHit", "src":"sounds/sfx/QotileHit.mp3"},
+        {"id":"cannonReady", "src":"sounds/sfx/CannonReady.mp3"},
+        {"id":"collectEnergy", "src":"sounds/sfx/Energy_Collecting.mp3"},
+        {"id":"squidKilled", "src":"sounds/sfx/Squid_Killed_revised.mp3"},
+        {"id":"chargeCannon", "src":"sounds/sfx/Shield Charge-01.mp3"} 
+		
    ],
 
 	"multiplayer": false
