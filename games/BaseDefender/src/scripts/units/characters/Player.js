@@ -44,6 +44,8 @@
 		}
 		this.path = this.buildPath();
 		//*/
+		this.pool_bullets = [];
+
 	}
 
 	Player.prototype.reset = function()
@@ -171,7 +173,7 @@
 	Player.prototype.removeWeapon = function(weapon)
 	{
 		var index = this.weapons.indexOf(weapon);
-		console.log('weapons', this.weapons, weapon);
+		//console.log('weapons', this.weapons, weapon);
 		if(index >= 0) this.weapons.splice(index, 1);
 		this.buidAllPaths();
 	}
@@ -240,13 +242,13 @@
 		return g.isInAttackRadius(distance);
 	}
 
-	Player.prototype.autoAttack = function()
+	Player.prototype.tick = function(tickFactor)
 	{
 		//check status for queued enemies
 		for(var i = 0; i < this.targets.length; i++)
 		{
 			var target = this.targets[i];
-
+			//target.tick();
 			if(target.isDeadFinished() && target._avatar.alpha <= 0.1)
 			{
 				//over... remove target entirely
@@ -287,28 +289,33 @@
 		for(var i = 0; i < this.weapons.length; i++)
 		{
 			var gatling = this.weapons[i];
-
+			//gatling.tick();
+			/*if (gatling.canFire) {
+				gatling.fire(gatling.target || this.weapons[(i+1)%this.weapons.length]);
+			}*/
+			
 			//correct real turn speed according the fastForward parameter
 			gatling.realTurnSpeed = Math.round(gatling.turnSpeed/this.fastForward);
 
 			//find target for gatling, if target is null or out of attack radius or escaped...
 			var needChangeTarget = gatling.target == null || !this.checkInAttackRadius(gatling, gatling.target)
 								   || (gatling.target.x >= this.gameInfo.width + gatling.target.width);
-			if(needChangeTarget)
-			{		
+			if(needChangeTarget)	
+			{		//hit: means can get shot for target
 				var newTarget = this.findTarget(gatling, this.targets);
 				gatling.target = newTarget;
-			}		
+			}	
 			
-			//aim and fire to target
 			if(gatling.target)
 			{
-				//hit: means can get shot for target
+			//aim and fire to target
+			
 				var hit = gatling.aim(gatling.target, true);
 				if(hit)
 				{	
 					if (gatling.canFire) {
-						gatling.fire(gatling.target);
+						//console.log('*** tickFactor ', tickFactor);
+						gatling.fire(gatling.target, tickFactor || 1, this);
 					}
 					/*
 					var damage = gatling.getDamange();
@@ -334,9 +341,85 @@
 		}	
 		
 		this.enemyAttack();
+		this.moveBullets(tickFactor);
 	}
 	
+	Player.prototype.moveBullets = function (tickFactor) {
+		if(isNaN(tickFactor))
+			return;
+		var b;
+		for(var i=0;i<this.pool_bullets.length;i++) {
+			b = this.pool_bullets[i];
+			b.sprite.x += b.vx* tickFactor;
+			b.sprite.y += b.vy* tickFactor;
+			//console.log('*** moveBullet ', tickFactor , b.vx,b.vy,  b.sprite.x, b.sprite.y);
+			var hit = this.checkWalls(b);
+			if (hit) {
+				var index = this.pool_bullets.indexOf(b);
+				if (index > -1) {
+					this.pool_bullets.splice(index, 1);
+ 				}
+				this.stage.removeChild(b.sprite);
+				return;
+			}
+ 
+			this.checkCollisionEnemy(b);
+ 		}
+	} 
 	
+	Player.prototype.calculate = function (clip1, clip2, offset) {
+		var pt = clip1.localToGlobal(0, 0);
+		var dx = clip2.sprite.x - pt.x;
+		var dy = clip2.sprite.y - pt.y;
+		var distance = Math.sqrt(dx*dx+dy*dy);
+		var minDistance = clip2.width / 2 + clip1.width / 2;
+		return (distance < minDistance + offset) ? true : false;
+	}
+	
+	Player.prototype.checkCollisionEnemy = function (bullet) {
+		//if (this.isGameOver) { return; }
+		var targets = this.targets;
+		var len = targets.length;
+		if (bullet == null) { return; }
+		var c;
+		for (var i=0; i<len; i++) {
+			c = targets[i];
+			var hit = this.calculate(c, bullet, 10);//this.calculateDistance(c, bullet, 10);
+			if (hit) {
+ 				this.playSound("qotileHit");
+				var damage = this.getDamange();
+				c.getShot(damage);
+				var _enemy = c;
+				if(_enemy.isAggressive() && !_enemy.target){
+					_enemy.target = this;
+				}
+ 				var index = this.bullets.indexOf(bullet);
+				if (index > -1) {
+					this.bullets.splice(index, 1);
+				}
+				this.stage.removeChild(bullet.sprite);
+				return;
+			}
+ 		}
+	} 
+	Player.prototype.checkBounds = function(clip) {
+		clip.sprite.x = Math.max((clip.width/8), Math.min(clip.sprite.x, this.w - clip.width / 2 ));
+		clip.sprite.y = Math.max((clip.height/8), Math.min(clip.sprite.y, this.h - clip.height / 4 ));
+	} 
+
+	Player.prototype.checkWalls = function (clip) {
+		var right = this.gameInfo.width;
+		var left = 0;
+		var top = left;
+		var bottom = this.gameInfo.height;
+		if (clip.sprite.x - clip.width / 2 > right
+			|| clip.sprite.x + clip.width / 2 < left
+			|| clip.sprite.y - clip.height / 2 > bottom
+			|| clip.sprite.y + clip.height / 2 < top) {
+			return true;
+		}
+		return false;
+	} 
 	Player.prototype.counterAttack = function(_enemy){	
 		if(!_enemy.isAttackAble()){
 			//console.log('_enemy.is not AttackAble'  , _enemy );
@@ -349,7 +432,7 @@
 			if(hit)
 			{			
 				var damage = _enemy.getDamange();
-				_enemy.target.getShot(damage);
+				_enemy.target.getShot(damage,this);
 				console.log('enemy counterAttack with damage '  , damage);
 			}else{
 				this.moveTarget(_enemy);
@@ -358,8 +441,7 @@
 			//is dead?
 			if(_enemy.target.isDead()) 
 			{
-				_enemy.setDirection([0,1]);
-				console.log('enemy.target isDead ' );
+ 				console.log('enemy.target isDead ' );
 				_enemy.target = null;
 			 
 				this.enemySearchToHitTower(_enemy);
@@ -411,15 +493,18 @@
 			console.log('enemy.enemySearchToHitTower '  , enemy.target );
 			
 			if(enemy.target){
-				var end = this.getTile(enemy.target);
-				var start = this.getTile(enemy);
+				var end = [enemy.target.tx, enemy.target.ty];//this.getTile(enemy.target);
+				var start = [enemy.tx, enemy.ty];//this.getTile(enemy);
+				console.log('buildPathToTarget '  , enemy.tx, enemy.ty, start , end  );
 				enemy.path = this.buildPathToTarget(enemy.tx, enemy.ty, start , end );
-				console.log('enemy.path  '  , enemy.path   );
-				/*var self = this;
-				var cb = function(){
-					self.enemyHit(enemy); 
-				}*/
-				//this.enemyHit(enemy );
+				console.log('enemy.path  '  , enemy.path , enemy.tx, enemy.ty, start , end  );
+				var self = this;
+				//enemy.setDirection([1,0]);
+				//this.startPoint = [enemy.x,enemy.y];
+				//var dir = this.getNextDirection(enemy)
+				//console.log('setDirection '  , dir);
+				//enemy.setDirection( dir);
+				this.enemyHit(enemy );
 			}
 		}
 	},
@@ -430,7 +515,7 @@
 		if(hit)
 		{			
 			var damage = enemy.getDamange();
-			enemy.target.getShot(damage);
+			enemy.target.getShot(damage,this);
 			enemy.setMovingToTarget(false);
 			console.log('enemy.enemyHit take damage '  , damage);
 	
@@ -487,15 +572,23 @@
 			}else if(target.direction[1] != 0)
 			{
 				var dy = target.y - (this.startPoint[1] + t[1] * this.tileHeight);
-				if(dy == -5) 
+				if(dy == -5 || dy == 0) 
 				{
 					target.setDirection(this.getNextDirection(target));	
 					target.tx += target.direction[0];
 					target.ty += target.direction[1];
 				}
 				this.moveByDirection(target);
-			}	
-			
+			}/*else{
+				target.setDirection(this.getNextDirection(target));	
+				target.tx += target.direction[0];
+				target.ty += target.direction[1];
+				this.moveByDirection(target);
+			}*/
+			else
+				console.log('target at '  , target.direction, target.path, dx, dy );
+			/**/
+			//console.log('target at '  , target.x, target.y , target.tx, target.ty, target.target, target.path);
 		}
 		//console.log('target at '  , target.x, target.y , target.tx, target.ty);
 			
@@ -541,7 +634,7 @@
 		}	
 		return null;
 	}
-	
+	/*
 	Player.prototype.moveToTarget = function(actor)
 	{
  
@@ -572,7 +665,7 @@
 			//}
 		//}	
 		//return null;
-	}
+	}*/
 	
 	
 	scope.Player = Player;

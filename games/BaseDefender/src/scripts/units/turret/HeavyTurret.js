@@ -1,6 +1,6 @@
 (function(scope) {
  
-	HeavyTurret = function(stage)
+	HeavyTurret = function()
 	{
  		this.id = UID.get(); 	
 		this.name = "HeavyTurret";	
@@ -28,16 +28,13 @@
 		this.health = 0;	
 		this._healthBar = null;	
 		this._healthBarBg = null;	
-		this.stage = stage;
-		
-		this._create();
-		this._createHealthBar();
-		
+ 		 
 		this.initialize();
 	}
-	HeavyTurret.prototype = new scope.LightTurret() ;
+	HeavyTurret.prototype = new scope.Turret() ;
 	HeavyTurret.prototype.Container_initialize = HeavyTurret.prototype.initialize;
- 
+	HeavyTurret.prototype.Container_tick = HeavyTurret.prototype.tick; 
+	
 	HeavyTurret.prototype.IDLE = "idle";
 	HeavyTurret.prototype.FIRE = "fire";
 
@@ -46,8 +43,14 @@
 	
 	HeavyTurret.prototype.initialize = function()
 	{
+		this._create();
+		this._createHealthBar();
+		
  	}
-
+	HeavyTurret.prototype.tick = function()
+	{
+		this.Container_tick();
+	}
 	HeavyTurret.prototype._create = function()
 	{
 		console.log('_create '  , this );

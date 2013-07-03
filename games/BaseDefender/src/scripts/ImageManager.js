@@ -391,7 +391,7 @@ ImageManager = [];
 					"tesla_deg45":[13], 
 					"tesla_deg0":[14], 
 					"tesla_idle":[12], 
-					"tesla_turret_atk":[14,13,12], 
+					"tesla_atk":[14,13,12], 
 					
 					"turret_deg315":[23],
 					"turre_deg270":[16], 
@@ -402,7 +402,7 @@ ImageManager = [];
 					"turret_deg45":[21], 
 					"turret_deg0":[22],
 					"turret_idle":[20],
-					"turret_atk":[22,21,20] 	
+					"turret_atk":[18] 	
 					
 			} 
 		},

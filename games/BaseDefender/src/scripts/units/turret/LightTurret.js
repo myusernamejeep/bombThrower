@@ -30,14 +30,14 @@
 		this._healthBarBg = null;	
 		this.stage = stage;
 		
-		this._create();
-		this._createHealthBar();
-		
 		this.initialize();
-	}
+	} 
+	
+ 	
 	LightTurret.prototype = new scope.Turret() ; 
 	LightTurret.prototype.Container_initialize = LightTurret.prototype.initialize;
- 
+	LightTurret.prototype.Container_tick = LightTurret.prototype.tick; 
+	
 	LightTurret.prototype.IDLE = "idle";
 	LightTurret.prototype.FIRE = "fire";
 
@@ -48,8 +48,15 @@
 	
 	LightTurret.prototype.initialize = function()
 	{
+		
+		this._create();
+		this._createHealthBar();
+		
  	}
-
+	LightTurret.prototype.tick = function()
+	{
+		this.Container_tick();
+	}
 	LightTurret.prototype._create = function()
 	{
 		console.log('_create '  , this );

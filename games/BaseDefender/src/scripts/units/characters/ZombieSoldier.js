@@ -91,7 +91,7 @@
 
 	ZombieSoldier.prototype.setDirection = function(direction)
 	{
-		if(!direction || this._avatar.anim_death == true ){ 
+		if(!direction || this.anim_death == true ){ 
 			return;
 		}
 		if(this.direction[0] == direction[0] && this.direction[1] == direction[1]) return;
@@ -135,7 +135,7 @@
 		this.removeChild(this._healthBarBg);
 		this._healthBar = null;
 		this._healthBarBg = null;
-		this._avatar.anim_death = true;
+		this.anim_death = true;
  		var frame_name = '';
 		if(this.direction[0] == 1)
 		{
@@ -163,9 +163,9 @@
 		};
 	}
  
-	ZombieSoldier.prototype.tick = function(context)
+	ZombieSoldier.prototype.tick = function(tickFactor)
 	{
-		if(this.isDead() && !this._avatar.anim_death )
+		if(this.isDead() && !this.anim_death )
 		{
 			//animate death if health=0
 			this.animateDeath();

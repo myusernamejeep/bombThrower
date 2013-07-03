@@ -15,7 +15,8 @@
 		this.tx = -1;
 		this.ty = 3;
 		this.direction = [1, 0];
-		this.width = 38;
+		this.width = 50;
+		this.height = 100;
 		this._avatar = null;
 		this._healthBar = null;	
 		this._healthBarBg = null;	
@@ -126,9 +127,11 @@
 		this.removeChild(this._healthBarBg);
 		this._healthBar = null;
 		this._healthBarBg = null;
-		this._avatar.anim_death = true;
+		this.anim_death = true;
  		var frame_name = '';
- 
+		if(!this._avatar){ 
+			return;
+		}
 		if(this.direction[0] == 1)
 		{
   			frame_name = 'die_right';

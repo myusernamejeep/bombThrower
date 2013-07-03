@@ -63,18 +63,19 @@
 
  		this.initialize();
 			
-		this._create();
-		this._createHealthBar();
 		
 	}
+	
 	Turret.prototype = new createjs.Container(); // inherit from Container
 	Turret.prototype.Container_initialize = Turret.prototype.initialize;
  	Turret.prototype.initialize = function () 
 	{
-		console.log('initialize loadPool'  , this );
+		//console.log('**** initialize loadPool'  , this.parent );
 		this.Container_initialize();
 		this.loadPool();
 		
+		this._create();
+		this._createHealthBar();
 		
     }
 	Turret.prototype.IDLE = "idle";
@@ -86,7 +87,7 @@
 					  {cost:150, sellMoney:75, upgradeMoney:95, minDamage:50, maxDamage:80, attackRadius:200, turnSpeed:300, maxHealth:1500}];
 	Turret.prototype._create = function()
 	{
-		console.log('_create '  , this );
+		//console.log('_create '  , this );
 		//set level
 		this.setLevel(this, 0);
 		this.spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
@@ -107,8 +108,8 @@
 		
 		this.spritesheet_weapon  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.weapon);
  		var explosion = this.createBitmap("explosion", this.spritesheet_weapon);
-		explosion.x = -120;
-		explosion.y = -120;
+		explosion.x =  0;
+		explosion.y =  0;
 		this.explosion = explosion;
 		this.explosion.visible = false;
 		this.addChild(explosion);
@@ -188,7 +189,7 @@
 		this.turnSpeed += 2;
 		this.realTurnSpeed +=2;
 		this.health = this.maxHealth*1.20>>0;
-		console.log('upgrade', this.turnSpeed ,  this.attackRadius, this.minDamage , this.maxDamage, this.health );
+		//console.log('upgrade', this.turnSpeed ,  this.attackRadius, this.minDamage , this.maxDamage, this.health );
 		this.tick();
 	}
 	Turret.prototype.createBitmap = function(name, spritesheet, play) 
@@ -205,8 +206,10 @@
 		return sprite;
 	} 
  
-	Turret.prototype.tick = function(tickFactor)
+	Turret.prototype.tick = function(tickFactor, player)
 	{
+		if(isNaN(tickFactor))
+			return;
 		if(this.levelDigit){
 			this.levelDigit.removeAllChildren();
 		}else{
@@ -229,13 +232,21 @@
 		if(this.isDead() && !this.anim_death )
 		{
 			//animate death if health=0
-			this.animateDeath();
+			this.animateDeath(player);
 		}
 		
-		this.update(tickFactor);
- 	}
- 
-	Turret.prototype.getShot = function(damage)
+		//this.tickFactor = tickFactor;
+		
+		this.emitter.tickFactor = tickFactor;
+		//this.moveBullet(tickFactor, player);
+		//this.numTicks = this.numTicks + (1*tickFactor);
+		
+		if (this.lastFire == 0 || this.numTicks > this.lastFire + s.FIRE_DELAY) {
+			this.canFire = true;
+		}
+	}
+
+	Turret.prototype.getShot = function(damage,player)
 	{
 		this.health -= damage;
 		if(this.health < 0) this.health = 0;
@@ -246,13 +257,13 @@
 	 
 		var healthWidth = Math.round(40*percent) || 1;
 		if(this._healthBar) this._healthBar.scaleX = percent;
-		console.log('Turret getShot', this.health , '/', this.maxHealth );
+		//console.log('Turret getShot', this.health , '/', this.maxHealth );
 		if( this.isDead()  && !this.anim_death ){
-			this.animateDeath();
+			this.animateDeath(player);
 		}
  	}
 	
-	Turret.prototype.animateDeath = function()
+	Turret.prototype.animateDeath = function(player)
 	{
 		this.removeChild(this._healthBar);
 		this.removeChild(this._healthBarBg);
@@ -265,12 +276,12 @@
 		this.explosion.gotoAndPlay("explosion");
  
 		var self = this;
-		this.explosion.onAnimationEnd = function(){
-			console.log('explosion.onAnimationEnd'  );
-			self.parent.stage.player.removeWeapon(self);
+ 		this.explosion.onAnimationEnd = function(){
+			//console.log('explosion.onAnimationEnd'  );
+			player.removeWeapon(self);
 			self.parent.removeChild(self);
-			console.log('self.parent', self.parent.stage );
- 			
+ 			self.removeBullets(player);
+		
 		};
 	}
 
@@ -301,11 +312,11 @@
 		//target can be either a DisplayObject or a Point like {x:10, y:10}
 		var dx = target.x - this.x;
 		var dy = target.y - this.y;
-		var angle = 180 / Math.PI * Math.atan2(dy, dx) + 180;
+		var angle = 180 / Math.PI * Math.atan2(dy, dx) ;//+ 180;
 		var distance = Math.sqrt(dx*dx + dy*dy);
 		
 		//each frame represent 10 degree angle
-		var frame = Math.round(angle / 10);	
+		//var frame = Math.round(angle / 10);	
 		var inRadius = this.isInAttackRadius(distance);
 		var status;
 		if(autoFire)
@@ -328,26 +339,35 @@
 		}
  		
 		//skip if there is no change and beyond radius
-		if((!inRadius || this._currentAngleFrame == frame) && this.status == status) 
+		if((!inRadius ) && this.status == status) 
 		{
 			if(hit) return this._checkShot();
 			return false;
 		}	
 		
 		//save changes
-		this._currentAngleFrame = frame;	
-		this._currentAngle = angle;
+		//this._currentAngleFrame = frame;	
+		//this._currentAngle = angle;
 		this.status = status;
   		frame = "atk";
-		this.sprite.rotation =  angle - 180 - 45;
+		//this.sprite.rotation =  angle - 180 - 45;
 		//aim it, hit it
- 
+		 if(angle == -90) angle = 0;
+		else if(angle < 0 && angle > -90) angle = -angle;
+		else if(angle >= 180 && angle <= 270) angle = 180 - angle;
+		 
+		//var _angle = Math.floor( angle/45 )*45;
+		//frame = 'deg'+_angle;
+		this.sprite.rotation =  angle;//angle - 45;
+		
 		if(hit)
 		{
+			//console.log('gotoAndPlay hit', this.prefix_key_anim + frame, angle );
 			this.sprite.gotoAndPlay(this.prefix_key_anim + frame);
 			return this._checkShot();
 		}else
 		{
+			//console.log('gotoAndStop !hit', this.prefix_key_anim + frame, angle );
 			this.sprite.gotoAndStop(this.prefix_key_anim + frame);
 		}
 		return false;
@@ -391,12 +411,16 @@
 	Turret.prototype.bulletBackToPool = function (bullet) {
 		this.pool[this.bulletIndex++] = bullet;
 	}
-
+	
+	Turret.prototype.clearPool = function (bullet) {
+		this.pool[this.bulletIndex++] = bullet;
+	}
+	
 	Turret.prototype.getBullet = function () {
 		if (this.bulletIndex > 0) {
 			return this.pool[--this.bulletIndex];
 		} else {
-			Atari.trace("Empty");
+			//Atari.trace("Empty");
 			return null;
 		}
 		return null;
@@ -407,124 +431,154 @@
 		return inst;
 	},
 
-	Turret.prototype.fire = function(target,tickFactor) {
-		//this.numTicks = this.numTicks + (1*(this.tickFactor/2));
-		var timer = 1;
-	 
-		var dx = target.x - this.sprite.x;
-		var dy = target.y - this.sprite.y;
-		var angle = Math.atan2(dy, dx) * 180/Math.PI;
-
+	Turret.prototype.fire = function(target , tickFactor, player) {
+		if(isNaN(tickFactor)){
+			//console.log('*** fire # tickFactor', tickFactor );
+			return;
+		}
+		var dx = (target.x + target.width) - (this.sprite.x + this.sprite.regX);
+		var dy = (target.y + target.height) - (this.sprite.y + this.sprite.regY);//target.y - this.sprite.y;
+		var angle = (Math.atan2(dy, dx) * 180/Math.PI) + 180;
+		
+		//fire
+		var dir = scope.Utils.calcDirection(this.sprite, target), degree = dir.degree;
+		if(degree == -90) degree = 0;
+		else if(degree < 0 && degree > -90) degree = -degree;
+		else if(degree >= 180 && degree <= 270) degree = 180 - degree;
+		
 		var bullet = this.getBullet();
 		if (bullet != null) {
-			bullet.speed = 15;//*this.tickFactor;
-			bullet.angle = this.sprite.rotation;
+			var sin = Math.sin(degree*scope.Q.DEG_TO_RAD), cos = Math.cos(degree*scope.Q.DEG_TO_RAD);
+ 			/*
+			bullet.sprite.x = this.sprite.x + (this.sprite.regX + 10) * sin;
+			bullet.sprite.y = this.sprite.y - (this.sprite.regY + 10) * cos;*/
+			bullet.sprite.rotation = degree;
+ 			bullet.vx = bullet.speed * sin;
+			bullet.vy = bullet.speed * cos;
+	 
+			//bullet.speed = 2 * tickFactor ;
+			bullet.angle = bullet.sprite.rotation;
 
 			this.playSound("fire");
 			this.updatefire();
 
-			bullet.vx = bullet.speed * Math.cos(bullet.angle * Math.PI / 180);
-			bullet.vy = bullet.speed * Math.sin(bullet.angle * Math.PI / 180);
-
-			bullet.sprite.rotation = bullet.angle;
-
+			//bullet.vx = bullet.speed * Math.cos(bullet.angle * Math.PI / 180);
+			//bullet.vy = bullet.speed * Math.sin(bullet.angle * Math.PI / 180);
+	
+			//bullet.sprite.rotation = bullet.angle;
+			
 			var pt = this.sprite.localToGlobal(0, 0);
 			bullet.sprite.x = pt.x;
 			bullet.sprite.y = pt.y-5;
-
+			//console.log('*** fire bullet  ', tickFactor, bullet.vx, bullet.vy, bullet.sprite.rotation, bullet.sprite.x, bullet.sprite.y);
+			console.log('*** fire angle at ', degree, bullet.sprite.x, bullet.sprite.y);
+		
 			this.bullets.push(bullet);
-			this.addChild(bullet.sprite);
-			this.setChildIndex(bullet.sprite, this.getChildIndex(this.sprite)-1);
+			player.stage.addChild(bullet.sprite);
+			player.stage.setChildIndex(bullet.sprite, player.stage.getChildIndex(this.sprite)-1);
+		}else{
+			//console.log('*** fire bullet  null ' );
+			
 		}
 	}
-	/*
-	Turret.prototype.moveMissile =  function() {
-		if (this.missile == null && !this.missileActive) {  return; }
-		if (this.missile == null) { return; }
-		this.missile.sprite.x +=  25 * this.tickFactor;
-		var hit = this.checkWalls(this.missile);
-		if (hit) {
-			//if (this.stage.contains(this.missile)) {
-
-				this.missileActive = false;
-				this.stage.removeChild(this.missile.sprite);
-				this.missile = null;
-				this.qotile.charged = false;
-				return;
-			//}
-		}
-		this.checkCollisionEnemy(this.missile);
- 
-	} */
-
-	Turret.prototype.moveBullet = function () {
+	
+	Turret.prototype.updatefire = function () {
+		this.canFire = false;
+		this.lastFire = this.numTicks;
+ 	} 
+	 
+	Turret.prototype.removeBullets = function (player) {
 		var b;
 		for(var i=0;i<this.bullets.length;i++) {
 			b = this.bullets[i];
-			b.sprite.x += b.vx*this.tickFactor;
-			b.sprite.y += b.vy*this.tickFactor;
-			var hit = this.checkWalls(b);
+			var index = this.bullets.indexOf(b);
+			if (index > -1) {
+				this.bullets.splice(index, 1);
+				this.bulletBackToPool(b);
+			}
+			player.pool_bullets.push(b); 
+			player.stage.addChild(b.sprite);
+			//this.removeChild(b.sprite);
+  		}
+	} 
+	Turret.prototype.moveBullet = function (tickFactor, player) {
+		var b;
+		for(var i=0;i<this.bullets.length;i++) {
+			b = this.bullets[i];
+			if(isNaN(tickFactor))
+				return;
+			b.sprite.x += b.vx* tickFactor;
+			b.sprite.y += b.vy* tickFactor;
+			console.log('*** moveBullet ', tickFactor , b.vx,b.vy,  b.sprite.x, b.sprite.y);
+			var hit = this.checkWalls(b,player);
 			if (hit) {
 				var index = this.bullets.indexOf(b);
 				if (index > -1) {
 					this.bullets.splice(index, 1);
 					this.bulletBackToPool(b);
 				}
-				this.stage.removeChild(b.sprite);
+				this.removeChild(b.sprite);
 				return;
 			}
  
-			this.checkCollisionEnemy(b);
+			this.checkCollisionEnemy(b,player);
  		}
 	} 
-	Turret.prototype.checkCollisionEnemy = function (bullet) {
+	
+	Turret.prototype.calculate = function (clip1, clip2, offset) {
+		var pt = clip1.localToGlobal(0, 0);
+		var dx = clip2.sprite.x - pt.x;
+		var dy = clip2.sprite.y - pt.y;
+		var distance = Math.sqrt(dx*dx+dy*dy);
+		var minDistance = clip2.width / 2 + clip1.width / 2;
+		return (distance < minDistance + offset) ? true : false;
+	}
+	
+	Turret.prototype.checkCollisionEnemy = function (bullet,player) {
 		//if (this.isGameOver) { return; }
-		var targets = this.parent.stage.player.targets;
+		var targets = player.targets;
 		var len = targets.length;
 		if (bullet == null) { return; }
 		var c;
 		for (var i=0; i<len; i++) {
 			c = targets[i];
-			//if (c.getHit()) {
-				var hit = this.calculate(c, bullet, 10);//this.calculateDistance(c, bullet, 10);
-				if (hit) {
-					//SD:Shooting a block of the Qotile's shield
-					//this.createSparks(bullet.sprite.x, bullet.sprite.y, [this.pink_bullet], 5);
-					this.playSound("qotileHit");
-					//this.scoreManager.addScore(s.SHOOTING_BLOCK);
-					//c.setHit(false);
-					//this.killedCircle = c;
-					//this.createEnergy();
-					var damage = this.getDamange();
-					c.getShot(damage);
-					var _enemy = c;
-					// counter attack
-					if(_enemy.isAggressive() && !_enemy.target){
-						_enemy.target = this;
-					}
-					
-					var index = this.bullets.indexOf(bullet);
-					if (index > -1) {
-						this.bullets.splice(index, 1);
-						this.bulletBackToPool(bullet);
-					}
-					this.removeChild(bullet.sprite);
-					//bullet = null;
-					return;
+			var hit = this.calculate(c, bullet, 10);//this.calculateDistance(c, bullet, 10);
+			if (hit) {
+				//this.createSparks(bullet.sprite.x, bullet.sprite.y, [this.pink_bullet], 5);
+				this.playSound("qotileHit");
+				
+				var damage = this.getDamange();
+				c.getShot(damage);
+				//console.log('*** getDamange ',damage);
+				var _enemy = c;
+				// counter attack
+				if(_enemy.isAggressive() && !_enemy.target){
+					_enemy.target = this;
 				}
-			//}
-		}
+				//bullet.setHit();
+				var index = this.bullets.indexOf(bullet);
+				if (index > -1) {
+					this.bullets.splice(index, 1);
+					this.bulletBackToPool(bullet);
+					//console.log('*** bulletBackToPool ',bullet);
+				
+				}
+				player.stage.removeChild(bullet.sprite);
+				//bullet = null;
+				return;
+			}
+ 		}
 	} 
 	Turret.prototype.checkBounds = function(clip) {
 		clip.sprite.x = Math.max((clip.width/8), Math.min(clip.sprite.x, this.w - clip.width / 2 ));
 		clip.sprite.y = Math.max((clip.height/8), Math.min(clip.sprite.y, this.h - clip.height / 4 ));
 	} 
 
-	Turret.prototype.checkWalls = function (clip) {
-		var right = this.parent.stage.gameInfo.width;
+	Turret.prototype.checkWalls = function (clip,player) {
+		var right = player.gameInfo.width;
 		var left = 0;
 		var top = left;
-		var bottom = this.parent.stage.gameInfo.height;
+		var bottom = player.gameInfo.height;
 		if (clip.sprite.x - clip.width / 2 > right
 			|| clip.sprite.x + clip.width / 2 < left
 			|| clip.sprite.y - clip.height / 2 > bottom
@@ -539,45 +593,6 @@
 		this.emitter.emitMultiple({x:x, y:y}, num, s.SPARK_PROPS, list);
 	} 
  
-	Turret.prototype.updatefire = function () {
-		this.canFire = false;
-		this.lastFire = this.numTicks;
-		//this.hand.gotoAndPlay(s.HAND_SHOOT);
-	},
-
-	Turret.prototype.update = function(tickFactor) {
-		this.tickFactor = tickFactor;
-		this.emitter.tickFactor = tickFactor;
-  
-		//if (!this.isGameOver) {
- 			//this.moveMissile();
-			this.moveBullet();
- 			//this.checkBounds(this.yars);
-			//this.checkCollisionCannon();
-			//this.checkCollisionEnergy();
- 			//this.moveEnergy();
-  		//}
- 
-		var angle;
-		/*if (!this.gameInfo.touchEnabled) {
-			var dx = this.currentStageX - this.sprite.x;
-			var dy = this.currentStageY - this.sprite.y;
-			angle = Math.atan2(dy, dx) * 180/Math.PI;
-
-			this.sprite.rotation = (this.hasPressed) ? angle : 10;
-			//this.yars.backArm.rotation = (this.hasPressed) ? angle : 10;
-		}*/
-		this.numTicks = this.numTicks + (1*tickFactor);
-
-		if (this.lastFire == 0 || this.numTicks > this.lastFire + s.FIRE_DELAY) {
-			this.canFire = true;
-		}
-		/*
-		if (this.canFire) {
-			this.fire(this.tickFactor);
-		}*/
-	}
-
 	scope.Turret = Turret;
 
 }(window.Atari.currentGame))	

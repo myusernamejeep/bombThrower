@@ -80,7 +80,7 @@ var bgSound;
  			stage.addChild(bg);
 	 
  	 
- 			//console.debug(this.stage.assets,this.stage,this.gameInfo);
+ 			console.debug(this.stage.assets,this.stage,this.gameInfo);
 	 
 			stage.mouseEnabled = true;
         
@@ -258,8 +258,8 @@ var bgSound;
 			
 			 var defaultWeapons = [ 
 			{ type:"Turret", pos: [7,4] },
-			{ type:"Turret", pos: [8,4] },
-			{ type:"Turret", pos: [9,5] }
+			{ type:"LightTurret", pos: [8,4] },
+			{ type:"HeavyTurret", pos: [9,5] }
 			];//, [6,5]];//, [10,6], [12,5], [13,6]]
 			//default weapons
 			if(defaultWeapons)
@@ -279,7 +279,7 @@ var bgSound;
 			//s.animateDeath();
 			this.scene.addChild(s);
 			//*/
-			var defaultEnemies = [{ type:'ZombieSoldier' } ,{ type:'ZombieSoldierAntiGatling' }, {type:'Soldier' } ]; //;// ]; //{type:'Soldier' } ,  
+			var defaultEnemies = [/*{ type:'ZombieSoldier' } ,*/{ type:'ZombieSoldierAntiGatling' }, {type:'Soldier' } ]; //;// ]; //{type:'Soldier' } ,  
 			if(defaultEnemies)
 			{
 				for(var i = 0; i < defaultEnemies.length; i++)
@@ -500,7 +500,7 @@ var bgSound;
  
 	    },
 		
-		enterFrameHandler : function(e) {
+		enterFrameHandler : function(tickFactor) {
 			//game over
 			if(this.player.life == 0)
 			{
@@ -516,19 +516,19 @@ var bgSound;
 				return;
 			}
 			if(this.scoreBar)
-				this.scoreBar.tick();
+				this.scoreBar.tick(tickFactor);
 			if(this.player)
-				this.player.autoAttack();
+				this.player.tick(tickFactor);
 			if(this.weaponFactory)
-				this.weaponFactory.tick();	
+				this.weaponFactory.tick(tickFactor);	
 			if(this.weaponTool)
-				this.weaponTool.tick();	
+				this.weaponTool.tick(tickFactor);	
 			//Runner.gameOver();
 		 
 			for(var i = 0; i < this.scene.children.length; i++)
 			{		
 				var soldier = this.scene.children[i];
-				soldier.tick();
+				soldier.tick(tickFactor , this.player);
 			}
 			//this.showFPS();
 			this.fps_meter.tick();
@@ -644,7 +644,7 @@ var bgSound;
 			return { left: left, top: top };
 		},
 		
-		updateTime: function() { //console.debug('updateTime' );
+		updateTime: function(tickFactor) { //console.debug('updateTime' );
 			if(!this.timeText)
 				return ;
  		    if (this.timeRemaining < 0) {
@@ -664,8 +664,8 @@ var bgSound;
 			this.numTicks += tickFactor;
 		    this.timeRemaining = scope.GAME_TIME - (new Date().getTime() - this.startTime);
 			
-			this.updateTime();
-			this.enterFrameHandler();
+			this.updateTime(tickFactor);
+			this.enterFrameHandler(tickFactor);
 			
 			this.stage.update();
 		},

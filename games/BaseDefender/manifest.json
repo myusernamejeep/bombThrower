@@ -11,14 +11,17 @@
 
     "dependencies": [
   	     
-	    "scripts/Assets.js",
+	    "scripts/Utils.js",
+		"scripts/Assets.js",
 		"scripts/ImageManager.js",
 		"scripts/LevelManager.js",
  		"scripts/libs/Astar.js",
+		"scripts/libs/ndgmr.Collision.js",
+		
 		"scripts/components/Popup.js",
         "scripts/components/ScoreBoard.js",
  		"scripts/components/ScoreBar.js",
-		 
+		
  		"scripts/units/characters/spriteAnim/Zombie.js",
 
 		"scripts/units/characters/Player.js",
