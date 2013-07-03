@@ -53,19 +53,17 @@
 	}
 	HeavyTurret.prototype._create = function()
 	{
-		console.log('_create '  , this );
+		//console.log('_create '  , this, this.prefix_key_anim );
 		//set level
 		this.setLevel(this, 0);
 		
-		this.spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
+		var  spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
 		 
-		this.sprite = this.createBitmap(this.prefix_key_anim + "idle", this.spritesheet_turret);
+		this.sprite = this.createBitmap(this.prefix_key_anim + "idle", spritesheet_turret);
   		this.sprite.regX = 50;
 		this.sprite.regY = 46;
 		this.addChild(this.sprite);
- 
-		this.tick();
-		
+
  	}
   
 	scope.HeavyTurret = HeavyTurret;

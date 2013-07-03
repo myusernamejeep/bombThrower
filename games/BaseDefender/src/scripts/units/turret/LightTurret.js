@@ -59,84 +59,20 @@
 	}
 	LightTurret.prototype._create = function()
 	{
-		console.log('_create '  , this );
+		//console.log('_create '  , this , this.prefix_key_anim);
 		//set level
 		this.setLevel(this, 0);
-		this.spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
+		var spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
 		 
-		this.sprite = this.createBitmap(this.prefix_key_anim + "idle", this.spritesheet_turret);
+		this.sprite = this.createBitmap(this.prefix_key_anim + "idle",  spritesheet_turret);
   		this.sprite.regX = 23;
 		this.sprite.regY = 36;
 		this.addChild(this.sprite);
  
-		this.tick();
+		//this.tick();
 		
- 	}
- 
-	LightTurret.prototype.stop = function()
-	{
-		this.status = this.IDLE;
-  		this.sprite.visible = true;
- 		this.sprite.gotoAndPlay(this.prefix_key_anim + "idle");
  	}
   
-	LightTurret.prototype.aim = function(target, autoFire)
-	{
-		//target can be either a DisplayObject or a Point like {x:10, y:10}
-		var dx = target.x - this.x;
-		var dy = target.y - this.y;
-		var angle = 180 / Math.PI * Math.atan2(dy, dx) + 180;
-		var distance = Math.sqrt(dx*dx + dy*dy);
-		
-		//each frame represent 10 degree angle
-		var frame = Math.round(angle / 10);	
-		var inRadius = this.isInAttackRadius(distance);
-		var status;
-		if(autoFire)
-		{
-			if(inRadius) status = this.FIRE;
-			else status = this.IDLE;
-		}
-		var hit = status == this.FIRE;
-		//set turn and fire time
-		if(hit) 
-		{
-			if(this.status == this.IDLE)
-			{
-				this._turnTime = new Date().getTime();
-				this._fireTime = 0;
-			}else
-			{
-				this._fireTime = new Date().getTime() - this._turnTime;
-			}	
-		}
- 		
-		//skip if there is no change and beyond radius
-		if((!inRadius || this._currentAngleFrame == frame) && this.status == status) 
-		{
-			if(hit) return this._checkShot();
-			return false;
-		}	
-		
-		//save changes
-		this._currentAngleFrame = frame;	
-		this._currentAngle = angle;
-		this.status = status;
-  		frame = "atk";
-		this.sprite.rotation =  angle - 180 - 45;
-		//aim it, hit it
- 
-		if(hit)
-		{
-			this.sprite.gotoAndPlay(this.prefix_key_anim + frame);
-			return this._checkShot();
-		}else
-		{
-			this.sprite.gotoAndStop(this.prefix_key_anim + frame);
-		}
-		return false;
-	}
- 
 	scope.LightTurret = LightTurret;
 
 }(window.Atari.currentGame))	

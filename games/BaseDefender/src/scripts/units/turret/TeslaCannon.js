@@ -30,14 +30,13 @@
 		this._healthBarBg = null;	
 		this.stage = stage;
 		
-		this._create();
-		this._createHealthBar();
 		
 		this.initialize( );
 	}
-	TeslaCannon.prototype = new scope.LightTurret() ;
+	TeslaCannon.prototype = new scope.Turret() ;
 	TeslaCannon.prototype.Container_initialize = TeslaCannon.prototype.initialize;
- 
+	TeslaCannon.prototype.Container_tick = TeslaCannon.prototype.tick; 
+	
 	TeslaCannon.prototype.IDLE = "idle";
 	TeslaCannon.prototype.FIRE = "fire";
 
@@ -46,22 +45,27 @@
  
 	TeslaCannon.prototype.initialize = function( )
 	{
+		this._create();
+		this._createHealthBar();
 		
  	}
-
+	TeslaCannon.prototype.tick = function()
+	{
+		this.Container_tick();
+	}
 	TeslaCannon.prototype._create = function()
 	{
-		console.log('_create '  , this , this.prefix_key_anim,this.children);
+		//console.log('_create '  , this , this.prefix_key_anim );
 		//set level
 		this.setLevel(this, 0);
-		this.spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
+		var spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
 		 
-		this.sprite = this.createBitmap(this.prefix_key_anim + "idle", this.spritesheet_turret);
+		this.sprite = this.createBitmap(this.prefix_key_anim + "idle", spritesheet_turret);
   		this.sprite.regX = 31;
 		this.sprite.regY = 56;
 		this.addChild(this.sprite);
 		
-		this.tick();
+		//this.tick();
 		
  	}
   

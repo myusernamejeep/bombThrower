@@ -85,9 +85,11 @@
 	Turret.prototype.levels = [{cost:50, sellMoney:25, upgradeMoney:45, minDamage:10, maxDamage:20, attackRadius:135, turnSpeed:300, maxHealth:500},
 					  {cost:90, sellMoney:45, upgradeMoney:65, minDamage:20, maxDamage:50, attackRadius:160, turnSpeed:300, maxHealth:1000},
 					  {cost:150, sellMoney:75, upgradeMoney:95, minDamage:50, maxDamage:80, attackRadius:200, turnSpeed:300, maxHealth:1500}];
+	
 	Turret.prototype._create = function()
 	{
 		//console.log('_create '  , this );
+		/*
 		//set level
 		this.setLevel(this, 0);
 		this.spritesheet_turret  = new GameLibs.SpriteSheetWrapper(scope.ImageManager.turret);
@@ -97,7 +99,7 @@
 		this.sprite.regY = 36;
 		this.addChild(this.sprite);
  
-		this.tick();
+		this.tick();*/
 	}
 	Turret.prototype._createHealthBar = function()
 	{
